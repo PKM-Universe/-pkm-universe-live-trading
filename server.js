@@ -15,7 +15,7 @@ const config = require('./config');
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-const PORT = process.env.WEB_PORT || config.server.port || 3000;
+const PORT = process.env.PORT || process.env.WEB_PORT || config.server.port || 3000;
 
 // Store connected clients
 const clients = new Set();
