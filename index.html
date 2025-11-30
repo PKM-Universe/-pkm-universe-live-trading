@@ -2,9 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>PKM-Universe Trading Bot</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#00d4ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKM-Universe">
+    <meta name="description" content="The ultimate Pokemon trading platform with live bot status, team builder, and mystery boxes!">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Icons for iOS -->
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-192.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -26,6 +49,7 @@
                 <a href="#home" class="nav-link active">Home</a>
                 <a href="#dashboard" class="nav-link">Dashboard</a>
                 <a href="#features" class="nav-link">Features</a>
+                <a href="#pokemon-creator" class="nav-link">Creator</a>
                 <a href="#trade" class="nav-link">Trade</a>
                 <a href="#commands" class="nav-link">Commands</a>
                 <a href="#queue" class="nav-link">Queue</a>
@@ -266,6 +290,20 @@
                     <p>Join thousands of trainers in our active Discord community.</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Pokemon Creator Section (GenPKM-style) -->
+    <section id="pokemon-creator" class="pokemon-creator-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Advanced</span>
+                <h2 class="section-title">Pokemon Creator</h2>
+                <p class="section-subtitle">Full-featured Pokemon customization - Create any legal Pokemon</p>
+            </div>
+
+            <!-- Pokemon Creator will be injected here by pokemon-creator.js -->
+            <div id="pokemon-creator-container"></div>
         </div>
     </section>
 
@@ -967,8 +1005,141 @@ Timid Nature
         </div>
     </div>
 
+    <!-- Core Scripts -->
     <script src="js/pokemon-data.js"></script>
     <script src="js/main.js"></script>
     <script src="js/dashboard.js"></script>
+
+    <!-- Feature Scripts -->
+    <script src="js/animations.js"></script>
+    <script src="js/leaderboards.js"></script>
+    <script src="js/team-builder.js"></script>
+    <script src="js/pkhex-creator.js"></script>
+    <script src="js/trade-history.js"></script>
+    <script src="js/mystery-box.js"></script>
+    <script src="js/discord-widget.js"></script>
+    <script src="js/pokemon-creator.js"></script>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="#home" class="mobile-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#dashboard" class="mobile-nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="#mystery-box-container" class="mobile-nav-item">
+            <i class="fas fa-gift"></i>
+            <span>Mystery</span>
+        </a>
+        <a href="#team-builder-container" class="mobile-nav-item">
+            <i class="fas fa-users"></i>
+            <span>Teams</span>
+        </a>
+        <a href="https://discord.gg/pkm-universe" class="mobile-nav-item" target="_blank">
+            <i class="fab fa-discord"></i>
+            <span>Discord</span>
+        </a>
+    </nav>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fab-trade" onclick="document.querySelector('#trade').scrollIntoView({behavior: 'smooth'})">
+        <i class="fas fa-exchange-alt"></i>
+    </button>
+
+    <!-- PWA Install Banner -->
+    <div class="pwa-install-banner" id="pwa-install-banner">
+        <div class="pwa-icon">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div class="pwa-info">
+            <h4>Install PKM-Universe</h4>
+            <p>Add to home screen for the best experience</p>
+        </div>
+        <button class="pwa-install-btn" id="pwa-install-btn">Install</button>
+        <button class="pwa-dismiss" id="pwa-dismiss">&times;</button>
+    </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installBanner = document.getElementById('pwa-install-banner');
+        const installBtn = document.getElementById('pwa-install-btn');
+        const dismissBtn = document.getElementById('pwa-dismiss');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show install banner after a delay
+            setTimeout(() => {
+                if (!localStorage.getItem('pwa-install-dismissed')) {
+                    installBanner.classList.add('show');
+                }
+            }, 30000); // Show after 30 seconds
+        });
+
+        installBtn?.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+
+            if (outcome === 'accepted') {
+                console.log('PWA installed');
+            }
+
+            deferredPrompt = null;
+            installBanner.classList.remove('show');
+        });
+
+        dismissBtn?.addEventListener('click', () => {
+            installBanner.classList.remove('show');
+            localStorage.setItem('pwa-install-dismissed', 'true');
+        });
+
+        // Mobile navigation active state
+        document.querySelectorAll('.mobile-nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Update mobile nav on scroll
+        const sections = document.querySelectorAll('section[id]');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.mobile-nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href').includes(current)) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
