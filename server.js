@@ -17,8 +17,15 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 const PORT = process.env.PORT || process.env.WEB_PORT || config.server.port || 3000;
 
+// API key for sync endpoint (set in Railway environment variables)
+const SYNC_API_KEY = process.env.SYNC_API_KEY || 'pkm-universe-sync-key-2024';
+
 // Store connected clients
 const clients = new Set();
+
+// In-memory storage for synced bot status (used when local files don't exist, e.g., on Railway)
+let syncedBotStatus = null;
+let syncedNameMapping = {};
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
@@ -58,6 +65,7 @@ function sendDashboardUpdate(ws) {
 }
 
 // Get dashboard data from trade_bot_status.json AND bot_name_mapping.json
+// Falls back to synced data if local files don't exist (Railway deployment)
 function getDashboardData() {
     try {
         const statusPath = path.join(__dirname, '..', 'src', 'Json', 'trade_bot_status.json');
@@ -66,14 +74,18 @@ function getDashboardData() {
         let statusData = { network: {}, bots: {} };
         let nameMapping = {};
 
-        // Load bot name mapping
+        // Try local files first
         if (fs.existsSync(nameMappingPath)) {
             nameMapping = JSON.parse(fs.readFileSync(nameMappingPath, 'utf8'));
+        } else if (Object.keys(syncedNameMapping).length > 0) {
+            nameMapping = syncedNameMapping;
         }
 
-        // Load status data
         if (fs.existsSync(statusPath)) {
             statusData = JSON.parse(fs.readFileSync(statusPath, 'utf8'));
+        } else if (syncedBotStatus) {
+            // Use synced data from remote push
+            statusData = syncedBotStatus;
         }
 
         return formatDashboardData(statusData, nameMapping);
@@ -433,15 +445,63 @@ app.get('/api/pokemon/:name', async (req, res) => {
     }
 });
 
-// Serve index.html for all other routes (SPA support)
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
 // Dashboard API endpoint
 app.get('/api/dashboard', (req, res) => {
     const data = getDashboardData();
     res.json({ success: true, data });
+});
+
+// Sync endpoint - receives bot status updates from local machine
+app.post('/api/sync', (req, res) => {
+    const apiKey = req.headers['x-api-key'];
+
+    // Validate API key
+    if (apiKey !== SYNC_API_KEY) {
+        return res.status(401).json({ success: false, error: 'Invalid API key' });
+    }
+
+    try {
+        const { botStatus, nameMapping } = req.body;
+
+        if (botStatus) {
+            syncedBotStatus = botStatus;
+            console.log(`[Sync] Updated bot status: ${Object.keys(botStatus.bots || {}).length} bots`);
+        }
+
+        if (nameMapping) {
+            syncedNameMapping = nameMapping;
+            console.log(`[Sync] Updated name mapping: ${Object.keys(nameMapping).length} entries`);
+        }
+
+        // Broadcast update to all connected WebSocket clients
+        const data = getDashboardData();
+        broadcast({ type: 'dashboard', data });
+
+        res.json({
+            success: true,
+            message: 'Synced successfully',
+            botsCount: Object.keys(syncedBotStatus?.bots || {}).length,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('[Sync] Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        synced: syncedBotStatus !== null,
+        botsCount: Object.keys(syncedBotStatus?.bots || {}).length,
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Serve index.html for all other routes (SPA support)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Start server with WebSocket support
