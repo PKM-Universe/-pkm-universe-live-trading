@@ -13,7 +13,7 @@ module.exports = {
         clientId: 'YOUR_CLIENT_ID',
         clientSecret: 'YOUR_CLIENT_SECRET',
         redirectUri: 'http://localhost:3001/auth/callback',
-        inviteLink: 'https://discord.gg/YOUR_INVITE'
+        inviteLink: 'https://discord.gg/pkm-universe'
     },
 
     // Server Settings
@@ -47,7 +47,7 @@ module.exports = {
 
     // Social Links
     social: {
-        discord: 'https://discord.gg/YOUR_INVITE',
+        discord: 'https://discord.gg/pkm-universe',
         twitter: '',
         github: ''
     }
