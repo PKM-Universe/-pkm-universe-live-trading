@@ -1,11 +1,14 @@
 /**
- * PKM-Universe Advanced Pokemon Creator
- * Full-featured Pokemon customization with tabbed interface
- * Similar to GenPKM but with unique PKM-Universe styling
+ * PKM-Universe Pokemon Creator - Step-by-Step Wizard
+ * Unique wizard-style interface completely different from other creators
+ * Features: Progress steps, animated transitions, floating preview
  */
 
-class PokemonCreator {
+class PokemonCreatorWizard {
     constructor() {
+        this.currentStep = 1;
+        this.totalSteps = 5;
+
         this.pokemon = {
             species: '',
             speciesId: 0,
@@ -16,84 +19,50 @@ class PokemonCreator {
             gender: 'random',
             heldItem: '',
             pokeball: 'Poke Ball',
-            nature: 'Hardy',
+            nature: 'Adamant',
             ability: '',
-            abilityIndex: 0,
-            teraType: '',
-            gigantamax: false,
-            alpha: false,
-            form: 0,
+            teraType: 'Normal',
             ivs: { hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31 },
             evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
-            hyperTrained: { hp: false, atk: false, def: false, spa: false, spd: false, spe: false },
             moves: ['', '', '', ''],
-            friendship: 255,
-            dynamaxLevel: 10,
-            scale: 128,
-            ribbons: [],
-            marks: [],
             ot: {
                 name: 'PKM-Universe',
                 tid: '000000',
-                sid: '0000',
-                gender: 'Male',
-                language: 'ENG'
-            },
-            metLocation: '',
-            metLevel: 1,
-            metDate: new Date().toISOString().split('T')[0]
-        };
-
-        this.baseStats = {};
-        this.abilities = [];
-        this.moves = [];
-        this.forms = [];
-        this.currentTab = 'basics';
-
-        this.games = {
-            'za': { name: 'Legends: Z-A', gen: 9 },
-            'sv': { name: 'Scarlet/Violet', gen: 9 },
-            'pla': { name: 'Legends: Arceus', gen: 8 },
-            'bdsp': { name: 'Brilliant Diamond/Shining Pearl', gen: 8 },
-            'swsh': { name: 'Sword/Shield', gen: 8 },
-            'lgpe': { name: "Let's Go Pikachu/Eevee", gen: 7 }
+                sid: '0000'
+            }
         };
 
         this.natures = [
-            'Hardy', 'Lonely', 'Brave', 'Adamant', 'Naughty',
-            'Bold', 'Docile', 'Relaxed', 'Impish', 'Lax',
-            'Timid', 'Hasty', 'Serious', 'Jolly', 'Naive',
-            'Modest', 'Mild', 'Quiet', 'Bashful', 'Rash',
-            'Calm', 'Gentle', 'Sassy', 'Careful', 'Quirky'
+            { name: 'Adamant', plus: 'Atk', minus: 'SpA' },
+            { name: 'Jolly', plus: 'Spe', minus: 'SpA' },
+            { name: 'Modest', plus: 'SpA', minus: 'Atk' },
+            { name: 'Timid', plus: 'Spe', minus: 'Atk' },
+            { name: 'Bold', plus: 'Def', minus: 'Atk' },
+            { name: 'Calm', plus: 'SpD', minus: 'Atk' },
+            { name: 'Impish', plus: 'Def', minus: 'SpA' },
+            { name: 'Careful', plus: 'SpD', minus: 'SpA' },
+            { name: 'Brave', plus: 'Atk', minus: 'Spe' },
+            { name: 'Quiet', plus: 'SpA', minus: 'Spe' },
+            { name: 'Relaxed', plus: 'Def', minus: 'Spe' },
+            { name: 'Sassy', plus: 'SpD', minus: 'Spe' },
+            { name: 'Naive', plus: 'Spe', minus: 'SpD' },
+            { name: 'Hasty', plus: 'Spe', minus: 'Def' },
+            { name: 'Hardy', plus: null, minus: null },
+            { name: 'Docile', plus: null, minus: null },
+            { name: 'Serious', plus: null, minus: null },
+            { name: 'Bashful', plus: null, minus: null },
+            { name: 'Quirky', plus: null, minus: null }
         ];
 
-        this.natureEffects = {
-            'Hardy': { plus: null, minus: null },
-            'Lonely': { plus: 'atk', minus: 'def' },
-            'Brave': { plus: 'atk', minus: 'spe' },
-            'Adamant': { plus: 'atk', minus: 'spa' },
-            'Naughty': { plus: 'atk', minus: 'spd' },
-            'Bold': { plus: 'def', minus: 'atk' },
-            'Docile': { plus: null, minus: null },
-            'Relaxed': { plus: 'def', minus: 'spe' },
-            'Impish': { plus: 'def', minus: 'spa' },
-            'Lax': { plus: 'def', minus: 'spd' },
-            'Timid': { plus: 'spe', minus: 'atk' },
-            'Hasty': { plus: 'spe', minus: 'def' },
-            'Serious': { plus: null, minus: null },
-            'Jolly': { plus: 'spe', minus: 'spa' },
-            'Naive': { plus: 'spe', minus: 'spd' },
-            'Modest': { plus: 'spa', minus: 'atk' },
-            'Mild': { plus: 'spa', minus: 'def' },
-            'Quiet': { plus: 'spa', minus: 'spe' },
-            'Bashful': { plus: null, minus: null },
-            'Rash': { plus: 'spa', minus: 'spd' },
-            'Calm': { plus: 'spd', minus: 'atk' },
-            'Gentle': { plus: 'spd', minus: 'def' },
-            'Sassy': { plus: 'spd', minus: 'spe' },
-            'Careful': { plus: 'spd', minus: 'spa' },
-            'Quirky': { plus: null, minus: null }
-        };
+        this.pokeballs = [
+            'Poke Ball', 'Great Ball', 'Ultra Ball', 'Master Ball',
+            'Premier Ball', 'Luxury Ball', 'Dusk Ball', 'Timer Ball',
+            'Quick Ball', 'Heal Ball', 'Net Ball', 'Nest Ball',
+            'Dive Ball', 'Repeat Ball', 'Level Ball', 'Lure Ball',
+            'Moon Ball', 'Friend Ball', 'Love Ball', 'Heavy Ball',
+            'Fast Ball', 'Sport Ball', 'Safari Ball', 'Dream Ball',
+            'Beast Ball', 'Cherish Ball'
+        ];
 
         this.teraTypes = [
             'Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice',
@@ -101,1773 +70,1593 @@ class PokemonCreator {
             'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy', 'Stellar'
         ];
 
-        this.pokeballs = [
-            'Poke Ball', 'Great Ball', 'Ultra Ball', 'Master Ball',
-            'Safari Ball', 'Sport Ball', 'Level Ball', 'Lure Ball',
-            'Moon Ball', 'Friend Ball', 'Love Ball', 'Heavy Ball',
-            'Fast Ball', 'Premier Ball', 'Repeat Ball', 'Timer Ball',
-            'Nest Ball', 'Net Ball', 'Dive Ball', 'Luxury Ball',
-            'Heal Ball', 'Quick Ball', 'Dusk Ball', 'Cherish Ball',
-            'Dream Ball', 'Beast Ball', 'Strange Ball', 'Hisuian Poke',
-            'Hisuian Great', 'Hisuian Ultra', 'Feather Ball', 'Wing Ball',
-            'Jet Ball', 'Hisuian Heavy', 'Leaden Ball', 'Gigaton Ball',
-            'Origin Ball'
-        ];
-
-        this.languages = [
-            { code: 'ENG', name: 'English' },
-            { code: 'JPN', name: 'Japanese' },
-            { code: 'FRE', name: 'French' },
-            { code: 'GER', name: 'German' },
-            { code: 'SPA', name: 'Spanish' },
-            { code: 'ITA', name: 'Italian' },
-            { code: 'KOR', name: 'Korean' },
-            { code: 'CHS', name: 'Chinese (Simplified)' },
-            { code: 'CHT', name: 'Chinese (Traditional)' }
-        ];
-
-        this.popularItems = [
-            'None', 'Choice Band', 'Choice Specs', 'Choice Scarf',
-            'Life Orb', 'Leftovers', 'Rocky Helmet', 'Focus Sash',
-            'Assault Vest', 'Heavy-Duty Boots', 'Eviolite', 'Black Sludge',
-            'Sitrus Berry', 'Lum Berry', 'Expert Belt', 'Weakness Policy',
-            'Air Balloon', 'Loaded Dice', 'Booster Energy', 'Clear Amulet',
-            'Covert Cloak', 'Mirror Herb', 'Ability Shield', 'Flame Orb',
-            'Toxic Orb', 'Light Clay', 'Metronome', 'Wide Lens',
-            'Scope Lens', 'Razor Claw', 'Safety Goggles', 'Protective Pads',
-            'Shell Bell', 'Black Belt', 'Charcoal', 'Mystic Water',
-            'Miracle Seed', 'Never-Melt Ice', 'Soft Sand', 'Sharp Beak',
-            'Twisted Spoon', 'Silver Powder', 'Hard Stone', 'Spell Tag',
-            'Dragon Fang', 'Black Glasses', 'Metal Coat', 'Silk Scarf'
-        ];
-
-        this.ribbons = [
-            'Champion Ribbon', 'Tower Master Ribbon', 'Great Ability Ribbon',
-            'Double Ability Ribbon', 'Multi Ability Ribbon', 'Pair Ability Ribbon',
-            'World Ability Ribbon', 'Alert Ribbon', 'Shock Ribbon', 'Downcast Ribbon',
-            'Careless Ribbon', 'Relax Ribbon', 'Snooze Ribbon', 'Smile Ribbon',
-            'Gorgeous Ribbon', 'Royal Ribbon', 'Gorgeous Royal Ribbon', 'Footprint Ribbon',
-            'Record Ribbon', 'Event Ribbon', 'Legend Ribbon', 'World Champion Ribbon',
-            'Birthday Ribbon', 'Special Ribbon', 'Souvenir Ribbon', 'Wishing Ribbon',
-            'Classic Ribbon', 'Premier Ribbon', 'Best Friends Ribbon', 'Training Ribbon',
-            'Battle Memory Ribbon', 'Skillful Battler Ribbon', 'Expert Battler Ribbon',
-            'Effort Ribbon', 'Kalos Champion Ribbon', 'Hoenn Champion Ribbon',
-            'Sinnoh Champion Ribbon', 'Galar Champion Ribbon', 'Paldea Champion Ribbon',
-            'Master Rank Ribbon', 'Twinkling Star Ribbon', 'Once-in-a-Lifetime Ribbon'
-        ];
-
-        this.marks = [
-            'Lunchtime Mark', 'Sleepy-Time Mark', 'Dusk Mark', 'Dawn Mark',
-            'Cloudy Mark', 'Rainy Mark', 'Stormy Mark', 'Snowy Mark',
-            'Blizzard Mark', 'Dry Mark', 'Sandstorm Mark', 'Misty Mark',
-            'Destiny Mark', 'Fishing Mark', 'Curry Mark', 'Uncommon Mark',
-            'Rare Mark', 'Rowdy Mark', 'Absent-Minded Mark', 'Jittery Mark',
-            'Excited Mark', 'Charismatic Mark', 'Calmness Mark', 'Intense Mark',
-            'Zoned-Out Mark', 'Joyful Mark', 'Angry Mark', 'Smiley Mark',
-            'Teary Mark', 'Upbeat Mark', 'Peeved Mark', 'Intellectual Mark',
-            'Ferocious Mark', 'Crafty Mark', 'Scowling Mark', 'Kindly Mark',
-            'Flustered Mark', 'Pumped-Up Mark', 'Zero Energy Mark', 'Prideful Mark',
-            'Unsure Mark', 'Humble Mark', 'Thorny Mark', 'Vigor Mark',
-            'Slump Mark', 'Jumpy Mark', 'Partner Mark', 'Gourmand Mark',
-            'Alpha Mark', 'Mightiest Mark', 'Titan Mark', 'Itemfinder Mark'
-        ];
-
         this.init();
     }
 
     init() {
         this.injectStyles();
-        this.createUI();
+        this.createWizardUI();
         this.bindEvents();
     }
 
     injectStyles() {
-        if (document.getElementById('pokemon-creator-styles')) return;
+        if (document.getElementById('pkm-wizard-styles')) return;
 
         const styles = document.createElement('style');
-        styles.id = 'pokemon-creator-styles';
+        styles.id = 'pkm-wizard-styles';
         styles.textContent = `
-            .pokemon-creator-full {
-                background: linear-gradient(135deg, #0a0a15 0%, #1a1a2e 50%, #0f0f1a 100%);
-                border-radius: 25px;
-                padding: 0;
-                margin: 30px auto;
-                max-width: 1400px;
-                border: 3px solid transparent;
-                background-clip: padding-box;
+            /* ========================================
+               PKM-Universe Wizard - Unique Design
+               ======================================== */
+
+            .pkm-wizard-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
                 position: relative;
-                overflow: hidden;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             }
 
-            .pokemon-creator-full::before {
-                content: '';
-                position: absolute;
-                top: -3px;
-                left: -3px;
-                right: -3px;
-                bottom: -3px;
-                background: linear-gradient(135deg, #00d4ff, #ff6b6b, #ffd700, #00d4ff);
-                border-radius: 28px;
-                z-index: -1;
-                animation: borderGlow 4s ease infinite;
-            }
-
-            @keyframes borderGlow {
-                0%, 100% { opacity: 0.7; }
-                50% { opacity: 1; }
-            }
-
-            .pc-header {
-                background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 107, 107, 0.1));
-                padding: 25px 30px;
+            /* Progress Bar - Pokeball Theme */
+            .wizard-progress {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+                margin-bottom: 40px;
+                padding: 20px 40px;
+                background: linear-gradient(180deg, rgba(20,20,30,0.9) 0%, rgba(10,10,20,0.95) 100%);
+                border-radius: 60px;
+                border: 2px solid rgba(0, 212, 255, 0.3);
+                position: relative;
+                overflow: hidden;
             }
 
-            .pc-title {
-                font-family: 'Orbitron', sans-serif;
-                font-size: 2rem;
-                margin: 0;
-                background: linear-gradient(135deg, #00d4ff, #ff6b6b);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
+            .wizard-progress::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 60px;
+                right: 60px;
+                height: 4px;
+                background: rgba(255,255,255,0.1);
+                transform: translateY(-50%);
+                z-index: 0;
             }
 
-            .pc-game-selector {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
+            .wizard-progress-fill {
+                position: absolute;
+                top: 50%;
+                left: 60px;
+                height: 4px;
+                background: linear-gradient(90deg, #00d4ff, #00ff88);
+                transform: translateY(-50%);
+                transition: width 0.5s ease;
+                z-index: 1;
+                border-radius: 2px;
+                box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
             }
 
-            .pc-game-btn {
-                padding: 10px 20px;
-                border-radius: 20px;
-                border: 2px solid #333;
-                background: rgba(255, 255, 255, 0.05);
-                color: #888;
-                font-size: 0.85rem;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-
-            .pc-game-btn:hover {
-                border-color: #00d4ff;
-                color: #00d4ff;
-            }
-
-            .pc-game-btn.active {
-                background: linear-gradient(135deg, #00d4ff, #0099cc);
-                border-color: #00d4ff;
-                color: #000;
-                font-weight: bold;
-            }
-
-            .pc-main {
-                display: grid;
-                grid-template-columns: 320px 1fr;
-                min-height: 700px;
-            }
-
-            @media (max-width: 1000px) {
-                .pc-main {
-                    grid-template-columns: 1fr;
-                }
-            }
-
-            /* Preview Panel */
-            .pc-preview-panel {
-                background: linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
-                padding: 30px;
+            .wizard-step-indicator {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                border-right: 2px solid rgba(255, 255, 255, 0.1);
-            }
-
-            .pc-sprite-container {
-                width: 250px;
-                height: 250px;
-                position: relative;
-                margin-bottom: 20px;
-            }
-
-            .pc-sprite-bg {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 200px;
-                height: 200px;
-                border-radius: 50%;
-                background: radial-gradient(circle, rgba(0, 212, 255, 0.2) 0%, transparent 70%);
-            }
-
-            .pc-sprite {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                position: relative;
+                gap: 8px;
                 z-index: 2;
-                filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
-                transition: all 0.3s ease;
+                cursor: pointer;
+                transition: transform 0.3s ease;
             }
 
-            .pc-sprite.shiny {
-                filter: drop-shadow(0 0 30px gold) drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
-                animation: shinyGlow 2s ease-in-out infinite;
+            .wizard-step-indicator:hover {
+                transform: scale(1.1);
             }
 
-            @keyframes shinyGlow {
-                0%, 100% { filter: drop-shadow(0 0 20px gold); }
-                50% { filter: drop-shadow(0 0 40px gold); }
-            }
-
-            .pc-sprite-placeholder {
-                width: 100%;
-                height: 100%;
+            .wizard-step-ball {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background: linear-gradient(180deg, #ff4444 0%, #ff4444 45%, #222 45%, #222 55%, #fff 55%, #fff 100%);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 5rem;
-                color: #333;
+                position: relative;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             }
 
-            .pc-pokemon-info {
-                text-align: center;
-                width: 100%;
+            .wizard-step-ball::before {
+                content: '';
+                position: absolute;
+                width: 18px;
+                height: 18px;
+                background: #fff;
+                border-radius: 50%;
+                border: 4px solid #222;
             }
 
-            .pc-pokemon-name {
-                font-family: 'Orbitron', sans-serif;
-                font-size: 1.5rem;
+            .wizard-step-ball.active {
+                background: linear-gradient(180deg, #00d4ff 0%, #00d4ff 45%, #222 45%, #222 55%, #fff 55%, #fff 100%);
+                transform: scale(1.15);
+                box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+            }
+
+            .wizard-step-ball.completed {
+                background: linear-gradient(180deg, #00ff88 0%, #00ff88 45%, #222 45%, #222 55%, #fff 55%, #fff 100%);
+            }
+
+            .wizard-step-ball.completed::after {
+                content: '✓';
+                position: absolute;
                 color: #fff;
-                margin: 0 0 10px;
+                font-size: 14px;
+                font-weight: bold;
+                text-shadow: 0 0 5px rgba(0,0,0,0.5);
             }
 
-            .pc-pokemon-types {
+            .wizard-step-label {
+                font-size: 0.75rem;
+                color: #888;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: color 0.3s ease;
+            }
+
+            .wizard-step-indicator.active .wizard-step-label {
+                color: #00d4ff;
+                font-weight: 600;
+            }
+
+            .wizard-step-indicator.completed .wizard-step-label {
+                color: #00ff88;
+            }
+
+            /* Main Content Area */
+            .wizard-main {
                 display: flex;
+                gap: 30px;
+                min-height: 500px;
+            }
+
+            /* Floating Preview Panel */
+            .wizard-preview {
+                width: 280px;
+                flex-shrink: 0;
+                background: linear-gradient(135deg, rgba(20,20,35,0.95) 0%, rgba(10,10,25,0.98) 100%);
+                border-radius: 20px;
+                border: 2px solid rgba(0, 212, 255, 0.2);
+                padding: 25px;
+                position: sticky;
+                top: 100px;
+                height: fit-content;
+            }
+
+            .preview-sprite-container {
+                width: 200px;
+                height: 200px;
+                margin: 0 auto 20px;
+                background: radial-gradient(circle at center, rgba(0,212,255,0.1) 0%, transparent 70%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
                 justify-content: center;
-                gap: 8px;
+                position: relative;
+            }
+
+            .preview-sprite-container::before {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border: 2px dashed rgba(0,212,255,0.3);
+                border-radius: 50%;
+                animation: rotateBorder 20s linear infinite;
+            }
+
+            @keyframes rotateBorder {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+
+            .preview-sprite {
+                width: 160px;
+                height: 160px;
+                object-fit: contain;
+                filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+                transition: transform 0.3s ease;
+            }
+
+            .preview-sprite:hover {
+                transform: scale(1.1);
+            }
+
+            .preview-sprite.shiny {
+                filter: drop-shadow(0 0 20px rgba(255,215,0,0.6)) drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+            }
+
+            .preview-name {
+                text-align: center;
+                font-size: 1.4rem;
+                font-weight: 700;
+                color: #fff;
+                margin-bottom: 5px;
+                font-family: 'Orbitron', sans-serif;
+            }
+
+            .preview-level {
+                text-align: center;
+                font-size: 0.9rem;
+                color: #00d4ff;
                 margin-bottom: 15px;
             }
 
-            .pc-type-badge {
-                padding: 5px 15px;
-                border-radius: 15px;
-                font-size: 0.8rem;
-                font-weight: bold;
+            .preview-badges {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                margin-bottom: 15px;
+            }
+
+            .preview-badge {
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 0.7rem;
+                font-weight: 600;
                 text-transform: uppercase;
             }
 
-            .pc-stat-preview {
-                background: rgba(0, 0, 0, 0.3);
-                border-radius: 15px;
-                padding: 15px;
-                width: 100%;
-                margin-top: 15px;
-            }
-
-            .pc-stat-row {
-                display: flex;
-                align-items: center;
-                margin-bottom: 8px;
-            }
-
-            .pc-stat-label {
-                width: 50px;
-                font-size: 0.75rem;
-                color: #888;
-            }
-
-            .pc-stat-bar-container {
-                flex: 1;
-                height: 12px;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 6px;
-                overflow: hidden;
-                margin: 0 10px;
-            }
-
-            .pc-stat-bar {
-                height: 100%;
-                border-radius: 6px;
-                transition: width 0.3s ease;
-            }
-
-            .pc-stat-value {
-                width: 35px;
-                font-size: 0.8rem;
-                font-weight: bold;
-                color: #fff;
-                text-align: right;
-            }
-
-            .pc-quick-actions {
-                display: flex;
-                gap: 10px;
-                margin-top: 20px;
-                width: 100%;
-            }
-
-            .pc-quick-btn {
-                flex: 1;
-                padding: 12px;
-                border-radius: 10px;
-                border: none;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                font-size: 0.85rem;
-            }
-
-            .pc-shiny-btn {
+            .preview-badge.shiny {
                 background: linear-gradient(135deg, #ffd700, #ff8c00);
                 color: #000;
             }
 
-            .pc-shiny-btn.active {
-                box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            .preview-badge.game {
+                background: rgba(0, 212, 255, 0.2);
+                color: #00d4ff;
+                border: 1px solid rgba(0, 212, 255, 0.3);
             }
 
-            .pc-max-btn {
-                background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            .preview-stats {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .preview-stat {
+                background: rgba(0,0,0,0.3);
+                padding: 8px;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            .preview-stat-label {
+                font-size: 0.65rem;
+                color: #888;
+                text-transform: uppercase;
+            }
+
+            .preview-stat-value {
+                font-size: 1rem;
+                font-weight: 700;
                 color: #fff;
             }
 
-            /* Editor Panel */
-            .pc-editor-panel {
-                padding: 0;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .pc-tabs {
-                display: flex;
-                background: rgba(0, 0, 0, 0.3);
-                border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-                overflow-x: auto;
-            }
-
-            .pc-tab {
-                padding: 18px 30px;
-                background: transparent;
-                border: none;
-                color: #666;
-                font-size: 0.95rem;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                white-space: nowrap;
-                position: relative;
-            }
-
-            .pc-tab:hover {
-                color: #00d4ff;
-                background: rgba(0, 212, 255, 0.05);
-            }
-
-            .pc-tab.active {
-                color: #00d4ff;
-                background: rgba(0, 212, 255, 0.1);
-            }
-
-            .pc-tab.active::after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                height: 3px;
-                background: linear-gradient(90deg, #00d4ff, #ff6b6b);
-            }
-
-            .pc-tab-icon {
-                margin-right: 8px;
-            }
-
-            .pc-tab-content {
+            /* Step Content Card */
+            .wizard-step-content {
                 flex: 1;
-                padding: 25px;
-                overflow-y: auto;
+                background: linear-gradient(135deg, rgba(20,20,35,0.9) 0%, rgba(15,15,30,0.95) 100%);
+                border-radius: 25px;
+                border: 2px solid rgba(0, 212, 255, 0.2);
+                padding: 40px;
                 display: none;
+                animation: fadeSlideIn 0.4s ease;
             }
 
-            .pc-tab-content.active {
+            .wizard-step-content.active {
                 display: block;
+            }
+
+            @keyframes fadeSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .step-header {
+                margin-bottom: 30px;
+            }
+
+            .step-number {
+                display: inline-block;
+                width: 40px;
+                height: 40px;
+                background: linear-gradient(135deg, #00d4ff, #0099cc);
+                border-radius: 50%;
+                color: #000;
+                font-weight: 800;
+                font-size: 1.2rem;
+                line-height: 40px;
+                text-align: center;
+                margin-right: 15px;
+            }
+
+            .step-title {
+                display: inline;
+                font-size: 1.8rem;
+                font-weight: 700;
+                color: #fff;
+                font-family: 'Orbitron', sans-serif;
+            }
+
+            .step-subtitle {
+                color: #888;
+                margin-top: 8px;
+                font-size: 0.95rem;
             }
 
             /* Form Elements */
-            .pc-form-grid {
+            .wizard-form-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 20px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
             }
 
-            .pc-form-group {
-                margin-bottom: 20px;
+            .wizard-form-grid.single {
+                grid-template-columns: 1fr;
             }
 
-            .pc-form-group.full-width {
+            .wizard-form-group {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .wizard-form-group.full-width {
                 grid-column: 1 / -1;
             }
 
-            .pc-label {
-                display: block;
-                color: #888;
+            .wizard-label {
                 font-size: 0.85rem;
-                margin-bottom: 8px;
-                font-weight: 500;
+                color: #aaa;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-weight: 600;
             }
 
-            .pc-input, .pc-select {
-                width: 100%;
-                padding: 12px 15px;
+            .wizard-input,
+            .wizard-select {
+                background: rgba(0,0,0,0.4);
+                border: 2px solid rgba(255,255,255,0.1);
                 border-radius: 12px;
-                border: 2px solid #333;
-                background: rgba(255, 255, 255, 0.05);
+                padding: 14px 18px;
                 color: #fff;
-                font-size: 0.95rem;
+                font-size: 1rem;
                 transition: all 0.3s ease;
             }
 
-            .pc-input:focus, .pc-select:focus {
+            .wizard-input:focus,
+            .wizard-select:focus {
                 outline: none;
                 border-color: #00d4ff;
                 box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
             }
 
-            .pc-select option {
+            .wizard-select {
+                cursor: pointer;
+            }
+
+            .wizard-select option {
                 background: #1a1a2e;
                 color: #fff;
             }
 
-            .pc-search-input {
+            /* Pokemon Search */
+            .pokemon-search-container {
                 position: relative;
             }
 
-            .pc-search-input input {
-                padding-left: 40px;
-            }
-
-            .pc-search-input i {
-                position: absolute;
-                left: 15px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #666;
-            }
-
-            .pc-search-results {
+            .pokemon-search-results {
                 position: absolute;
                 top: 100%;
                 left: 0;
                 right: 0;
-                background: #1a1a2e;
-                border: 2px solid #333;
-                border-radius: 0 0 12px 12px;
+                background: rgba(20,20,35,0.98);
+                border: 2px solid rgba(0, 212, 255, 0.3);
+                border-radius: 12px;
                 max-height: 300px;
                 overflow-y: auto;
                 z-index: 100;
                 display: none;
             }
 
-            .pc-search-results.show {
+            .pokemon-search-results.show {
                 display: block;
             }
 
-            .pc-search-result {
+            .pokemon-search-item {
                 display: flex;
                 align-items: center;
-                gap: 10px;
-                padding: 10px 15px;
+                gap: 12px;
+                padding: 12px 15px;
                 cursor: pointer;
                 transition: background 0.2s ease;
             }
 
-            .pc-search-result:hover {
+            .pokemon-search-item:hover {
                 background: rgba(0, 212, 255, 0.1);
             }
 
-            .pc-search-result img {
+            .pokemon-search-item img {
                 width: 40px;
                 height: 40px;
             }
 
-            /* Toggle Switches */
-            .pc-toggle-group {
+            .pokemon-search-item span {
+                color: #fff;
+                font-weight: 500;
+            }
+
+            /* Toggle Switch */
+            .wizard-toggle-group {
                 display: flex;
                 align-items: center;
-                gap: 15px;
-            }
-
-            .pc-toggle {
-                width: 50px;
-                height: 26px;
-                background: #333;
-                border-radius: 13px;
-                position: relative;
-                cursor: pointer;
-                transition: background 0.3s ease;
-            }
-
-            .pc-toggle.active {
-                background: linear-gradient(135deg, #00d4ff, #0099cc);
-            }
-
-            .pc-toggle::after {
-                content: '';
-                position: absolute;
-                width: 22px;
-                height: 22px;
-                background: #fff;
-                border-radius: 50%;
-                top: 2px;
-                left: 2px;
-                transition: transform 0.3s ease;
-            }
-
-            .pc-toggle.active::after {
-                transform: translateX(24px);
-            }
-
-            /* Stat Sliders */
-            .pc-stat-editor {
-                background: rgba(0, 0, 0, 0.2);
-                border-radius: 15px;
-                padding: 20px;
-                margin-bottom: 15px;
-            }
-
-            .pc-stat-header {
-                display: flex;
                 justify-content: space-between;
-                align-items: center;
-                margin-bottom: 12px;
-            }
-
-            .pc-stat-name {
-                font-weight: bold;
-                color: #fff;
-            }
-
-            .pc-stat-name.boosted { color: #ff6b6b; }
-            .pc-stat-name.reduced { color: #4ecdc4; }
-
-            .pc-stat-values {
-                display: flex;
-                gap: 20px;
-                font-size: 0.85rem;
-            }
-
-            .pc-iv-ev-group {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-            .pc-slider {
-                flex: 1;
-                -webkit-appearance: none;
-                height: 8px;
-                border-radius: 4px;
-                outline: none;
-            }
-
-            .pc-slider.iv-slider {
-                background: linear-gradient(to right, #ff6b6b, #ffd700, #4ecdc4);
-            }
-
-            .pc-slider.ev-slider {
-                background: linear-gradient(to right, #333, #9b59b6);
-            }
-
-            .pc-slider::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                width: 20px;
-                height: 20px;
-                border-radius: 50%;
-                background: #fff;
-                cursor: pointer;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            }
-
-            .pc-slider-value {
-                min-width: 40px;
-                text-align: center;
-                font-weight: bold;
-                color: #fff;
-            }
-
-            .pc-hyper-train {
-                padding: 5px 10px;
-                border-radius: 8px;
-                border: 2px solid #ffd700;
-                background: transparent;
-                color: #ffd700;
-                font-size: 0.75rem;
-                cursor: pointer;
-                transition: all 0.2s ease;
-            }
-
-            .pc-hyper-train.active {
-                background: #ffd700;
-                color: #000;
-            }
-
-            .pc-ev-total {
-                background: rgba(0, 0, 0, 0.3);
+                background: rgba(0,0,0,0.3);
+                padding: 15px 20px;
                 border-radius: 12px;
-                padding: 15px;
-                margin-top: 20px;
             }
 
-            .pc-ev-bar {
-                height: 12px;
-                background: #222;
-                border-radius: 6px;
-                overflow: hidden;
-                margin-top: 10px;
+            .wizard-toggle-label {
+                color: #fff;
+                font-weight: 500;
             }
 
-            .pc-ev-fill {
-                height: 100%;
-                background: linear-gradient(90deg, #4ecdc4, #00d4ff, #9b59b6);
-                border-radius: 6px;
-                transition: width 0.3s ease;
-            }
-
-            .pc-ev-fill.over {
-                background: linear-gradient(90deg, #ff6b6b, #e74c3c);
-            }
-
-            /* Moves Section */
-            .pc-moves-grid {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-
-            @media (max-width: 600px) {
-                .pc-moves-grid {
-                    grid-template-columns: 1fr;
-                }
-            }
-
-            .pc-move-slot {
-                background: rgba(0, 0, 0, 0.2);
-                border-radius: 12px;
-                padding: 15px;
+            .wizard-toggle {
                 position: relative;
+                width: 60px;
+                height: 32px;
             }
 
-            .pc-move-number {
+            .wizard-toggle input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .wizard-toggle-slider {
                 position: absolute;
-                top: 10px;
-                left: 10px;
-                width: 25px;
-                height: 25px;
-                background: rgba(0, 212, 255, 0.2);
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 0.8rem;
-                color: #00d4ff;
-            }
-
-            .pc-move-input {
-                margin-top: 10px;
-            }
-
-            .pc-move-info {
-                display: none;
-                margin-top: 10px;
-                padding: 10px;
-                background: rgba(0, 0, 0, 0.2);
-                border-radius: 8px;
-                font-size: 0.85rem;
-            }
-
-            .pc-move-info.show {
-                display: block;
-            }
-
-            .pc-move-type {
-                display: inline-block;
-                padding: 3px 10px;
-                border-radius: 10px;
-                font-size: 0.75rem;
-                font-weight: bold;
-                margin-right: 10px;
-            }
-
-            /* Ribbons & Marks Grid */
-            .pc-ribbon-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-                gap: 10px;
-                max-height: 400px;
-                overflow-y: auto;
-            }
-
-            .pc-ribbon-item {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 10px;
-                background: rgba(0, 0, 0, 0.2);
-                border-radius: 10px;
                 cursor: pointer;
-                transition: all 0.2s ease;
-                border: 2px solid transparent;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(255,255,255,0.1);
+                transition: 0.3s;
+                border-radius: 32px;
             }
 
-            .pc-ribbon-item:hover {
-                background: rgba(0, 212, 255, 0.1);
+            .wizard-toggle-slider::before {
+                position: absolute;
+                content: "";
+                height: 24px;
+                width: 24px;
+                left: 4px;
+                bottom: 4px;
+                background: #fff;
+                transition: 0.3s;
+                border-radius: 50%;
             }
 
-            .pc-ribbon-item.selected {
-                border-color: #00d4ff;
-                background: rgba(0, 212, 255, 0.2);
-            }
-
-            .pc-ribbon-icon {
-                width: 30px;
-                height: 30px;
+            .wizard-toggle input:checked + .wizard-toggle-slider {
                 background: linear-gradient(135deg, #ffd700, #ff8c00);
-                border-radius: 50%;
+            }
+
+            .wizard-toggle input:checked + .wizard-toggle-slider::before {
+                transform: translateX(28px);
+            }
+
+            /* Stats Editor - Circular Design */
+            .stats-circular-grid {
                 display: flex;
-                align-items: center;
+                flex-wrap: wrap;
                 justify-content: center;
-                font-size: 0.8rem;
+                gap: 20px;
+                margin: 30px 0;
             }
 
-            .pc-ribbon-name {
-                flex: 1;
-                font-size: 0.8rem;
-                color: #ccc;
-            }
-
-            /* Action Buttons */
-            .pc-actions {
-                display: flex;
-                gap: 15px;
-                padding: 25px;
-                background: rgba(0, 0, 0, 0.3);
-                border-top: 2px solid rgba(255, 255, 255, 0.1);
-            }
-
-            .pc-action-btn {
-                flex: 1;
-                padding: 18px 25px;
-                border-radius: 15px;
-                border: none;
-                font-size: 1.1rem;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-            }
-
-            .pc-trade-btn {
-                background: linear-gradient(135deg, #00d4ff, #0099cc);
-                color: #000;
-            }
-
-            .pc-trade-btn:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
-            }
-
-            .pc-copy-btn {
-                background: linear-gradient(135deg, #2ecc71, #27ae60);
-                color: #fff;
-            }
-
-            .pc-save-btn {
-                background: linear-gradient(135deg, #9b59b6, #8e44ad);
-                color: #fff;
-            }
-
-            .pc-share-btn {
-                background: linear-gradient(135deg, #e74c3c, #c0392b);
-                color: #fff;
-            }
-
-            /* Batch Trading */
-            .pc-batch-section {
-                margin-top: 20px;
-                padding: 20px;
-                background: rgba(0, 0, 0, 0.2);
-                border-radius: 15px;
-            }
-
-            .pc-batch-title {
-                font-weight: bold;
-                color: #00d4ff;
-                margin-bottom: 15px;
-            }
-
-            .pc-batch-slots {
-                display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 15px;
-            }
-
-            .pc-batch-slot {
-                aspect-ratio: 1;
-                background: rgba(255, 255, 255, 0.05);
-                border: 2px dashed #333;
-                border-radius: 15px;
+            .stat-circle-container {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                gap: 10px;
+            }
+
+            .stat-circle {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                background: conic-gradient(
+                    var(--stat-color, #00d4ff) calc(var(--stat-percent, 0) * 1%),
+                    rgba(255,255,255,0.1) 0
+                );
+                display: flex;
+                align-items: center;
                 justify-content: center;
-                cursor: pointer;
+                position: relative;
+            }
+
+            .stat-circle::before {
+                content: '';
+                position: absolute;
+                width: 80px;
+                height: 80px;
+                background: rgba(20,20,35,1);
+                border-radius: 50%;
+            }
+
+            .stat-circle-inner {
+                position: relative;
+                z-index: 1;
+                text-align: center;
+            }
+
+            .stat-circle-value {
+                font-size: 1.4rem;
+                font-weight: 700;
+                color: #fff;
+            }
+
+            .stat-circle-label {
+                font-size: 0.7rem;
+                color: #888;
+                text-transform: uppercase;
+            }
+
+            .stat-inputs {
+                display: flex;
+                gap: 8px;
+            }
+
+            .stat-input-small {
+                width: 50px;
+                padding: 8px;
+                text-align: center;
+                background: rgba(0,0,0,0.4);
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 8px;
+                color: #fff;
+                font-size: 0.9rem;
+            }
+
+            .stat-input-small:focus {
+                outline: none;
+                border-color: #00d4ff;
+            }
+
+            .stat-input-label {
+                font-size: 0.6rem;
+                color: #666;
+                text-align: center;
+            }
+
+            /* Moves Selection - Card Style */
+            .moves-card-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .move-card {
+                background: rgba(0,0,0,0.3);
+                border: 2px solid rgba(255,255,255,0.1);
+                border-radius: 15px;
+                padding: 20px;
                 transition: all 0.3s ease;
             }
 
-            .pc-batch-slot:hover {
+            .move-card:focus-within {
                 border-color: #00d4ff;
+                box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            }
+
+            .move-card-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 12px;
+            }
+
+            .move-slot-number {
+                width: 28px;
+                height: 28px;
+                background: linear-gradient(135deg, #00d4ff, #0099cc);
+                border-radius: 50%;
+                color: #000;
+                font-weight: 700;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .move-card-title {
+                color: #888;
+                font-size: 0.8rem;
+                text-transform: uppercase;
+            }
+
+            .move-input {
+                width: 100%;
+                background: transparent;
+                border: none;
+                border-bottom: 2px solid rgba(255,255,255,0.2);
+                color: #fff;
+                font-size: 1.1rem;
+                padding: 8px 0;
+            }
+
+            .move-input:focus {
+                outline: none;
+                border-bottom-color: #00d4ff;
+            }
+
+            /* Navigation Buttons */
+            .wizard-nav {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 40px;
+                padding-top: 30px;
+                border-top: 1px solid rgba(255,255,255,0.1);
+            }
+
+            .wizard-btn {
+                padding: 15px 35px;
+                border-radius: 30px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .wizard-btn-back {
+                background: transparent;
+                border: 2px solid rgba(255,255,255,0.2);
+                color: #888;
+            }
+
+            .wizard-btn-back:hover {
+                border-color: #fff;
+                color: #fff;
+            }
+
+            .wizard-btn-next {
+                background: linear-gradient(135deg, #00d4ff, #0099cc);
+                border: none;
+                color: #000;
+            }
+
+            .wizard-btn-next:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+            }
+
+            .wizard-btn-complete {
+                background: linear-gradient(135deg, #00ff88, #00cc66);
+                border: none;
+                color: #000;
+            }
+
+            .wizard-btn-complete:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+            }
+
+            /* Quick Actions */
+            .quick-actions {
+                display: flex;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            .quick-action-btn {
+                padding: 8px 15px;
                 background: rgba(0, 212, 255, 0.1);
+                border: 1px solid rgba(0, 212, 255, 0.3);
+                border-radius: 20px;
+                color: #00d4ff;
+                font-size: 0.8rem;
+                cursor: pointer;
+                transition: all 0.2s ease;
             }
 
-            .pc-batch-slot.filled {
-                border-style: solid;
-                border-color: #00d4ff;
+            .quick-action-btn:hover {
+                background: rgba(0, 212, 255, 0.2);
             }
 
-            .pc-batch-slot img {
-                width: 60px;
-                height: 60px;
+            /* EV Total Bar */
+            .ev-total-bar {
+                margin-top: 20px;
+                padding: 15px;
+                background: rgba(0,0,0,0.3);
+                border-radius: 12px;
             }
 
-            .pc-batch-slot .slot-label {
-                color: #666;
+            .ev-total-header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+
+            .ev-total-label {
+                color: #888;
                 font-size: 0.85rem;
-                margin-top: 5px;
             }
 
-            /* Type colors */
-            .type-normal { background: #A8A878; color: #fff; }
-            .type-fire { background: #F08030; color: #fff; }
-            .type-water { background: #6890F0; color: #fff; }
-            .type-electric { background: #F8D030; color: #000; }
-            .type-grass { background: #78C850; color: #fff; }
-            .type-ice { background: #98D8D8; color: #000; }
-            .type-fighting { background: #C03028; color: #fff; }
-            .type-poison { background: #A040A0; color: #fff; }
-            .type-ground { background: #E0C068; color: #000; }
-            .type-flying { background: #A890F0; color: #fff; }
-            .type-psychic { background: #F85888; color: #fff; }
-            .type-bug { background: #A8B820; color: #fff; }
-            .type-rock { background: #B8A038; color: #fff; }
-            .type-ghost { background: #705898; color: #fff; }
-            .type-dragon { background: #7038F8; color: #fff; }
-            .type-dark { background: #705848; color: #fff; }
-            .type-steel { background: #B8B8D0; color: #000; }
-            .type-fairy { background: #EE99AC; color: #000; }
-            .type-stellar { background: linear-gradient(135deg, #ff6b6b, #ffd700, #4ecdc4); color: #fff; }
+            .ev-total-value {
+                color: #fff;
+                font-weight: 600;
+            }
 
-            /* Stat bar colors */
-            .stat-hp { background: linear-gradient(90deg, #ff5959, #ff8080); }
-            .stat-atk { background: linear-gradient(90deg, #f5ac78, #f8c8a8); }
-            .stat-def { background: linear-gradient(90deg, #fae078, #fcec9c); }
-            .stat-spa { background: linear-gradient(90deg, #9db7f5, #bdd0f8); }
-            .stat-spd { background: linear-gradient(90deg, #a7db8d, #c6e8b3); }
-            .stat-spe { background: linear-gradient(90deg, #fa92b2, #fbb8cc); }
+            .ev-total-value.warning {
+                color: #ff6b6b;
+            }
+
+            .ev-total-progress {
+                height: 8px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 4px;
+                overflow: hidden;
+            }
+
+            .ev-total-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #00d4ff, #00ff88);
+                transition: width 0.3s ease;
+            }
+
+            .ev-total-fill.warning {
+                background: linear-gradient(90deg, #ff6b6b, #ff4444);
+            }
+
+            /* Trade Output */
+            .trade-output {
+                background: rgba(0,0,0,0.5);
+                border: 2px solid rgba(0, 212, 255, 0.3);
+                border-radius: 15px;
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            .trade-output-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+
+            .trade-output-title {
+                color: #00d4ff;
+                font-weight: 600;
+            }
+
+            .trade-output-copy {
+                padding: 8px 15px;
+                background: #00d4ff;
+                border: none;
+                border-radius: 20px;
+                color: #000;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .trade-output-copy:hover {
+                transform: scale(1.05);
+            }
+
+            .trade-output-code {
+                background: rgba(0,0,0,0.4);
+                padding: 15px;
+                border-radius: 10px;
+                font-family: monospace;
+                color: #00ff88;
+                font-size: 0.9rem;
+                word-break: break-all;
+            }
+
+            /* Responsive */
+            @media (max-width: 900px) {
+                .wizard-main {
+                    flex-direction: column;
+                }
+
+                .wizard-preview {
+                    width: 100%;
+                    position: relative;
+                    top: 0;
+                }
+
+                .wizard-form-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .moves-card-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .stats-circular-grid {
+                    gap: 15px;
+                }
+
+                .stat-circle {
+                    width: 80px;
+                    height: 80px;
+                }
+
+                .stat-circle::before {
+                    width: 65px;
+                    height: 65px;
+                }
+
+                .wizard-progress {
+                    padding: 15px 20px;
+                }
+
+                .wizard-step-ball {
+                    width: 40px;
+                    height: 40px;
+                }
+
+                .wizard-step-ball::before {
+                    width: 14px;
+                    height: 14px;
+                    border-width: 3px;
+                }
+
+                .wizard-step-label {
+                    font-size: 0.65rem;
+                }
+            }
         `;
         document.head.appendChild(styles);
     }
 
-    createUI() {
-        const container = document.createElement('div');
-        container.id = 'pokemon-creator-full-container';
+    createWizardUI() {
+        const container = document.getElementById('pokemon-creator-container');
+        if (!container) return;
+
         container.innerHTML = `
-            <div class="pokemon-creator-full">
-                <div class="pc-header">
-                    <h2 class="pc-title"><i class="fas fa-wand-magic-sparkles"></i> Pokemon Creator</h2>
-                    <div class="pc-game-selector">
-                        ${Object.entries(this.games).map(([key, game]) => `
-                            <button class="pc-game-btn ${key === 'sv' ? 'active' : ''}" data-game="${key}">${game.name}</button>
-                        `).join('')}
-                    </div>
+            <div class="pkm-wizard-container">
+                <!-- Progress Bar -->
+                <div class="wizard-progress">
+                    <div class="wizard-progress-fill" id="progress-fill" style="width: 0%;"></div>
+                    ${this.createProgressSteps()}
                 </div>
 
-                <div class="pc-main">
-                    <!-- Preview Panel -->
-                    <div class="pc-preview-panel">
-                        <div class="pc-sprite-container">
-                            <div class="pc-sprite-bg"></div>
-                            <div class="pc-sprite-placeholder" id="pc-sprite">
-                                <i class="fas fa-question"></i>
-                            </div>
+                <!-- Main Content -->
+                <div class="wizard-main">
+                    <!-- Floating Preview -->
+                    <div class="wizard-preview">
+                        <div class="preview-sprite-container">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+                                 alt="Pokemon" class="preview-sprite" id="preview-sprite">
                         </div>
-
-                        <div class="pc-pokemon-info">
-                            <h3 class="pc-pokemon-name" id="pc-pokemon-name">Select a Pokemon</h3>
-                            <div class="pc-pokemon-types" id="pc-pokemon-types"></div>
-                        </div>
-
-                        <div class="pc-quick-actions">
-                            <button class="pc-quick-btn pc-shiny-btn" id="pc-shiny-toggle">
-                                <i class="fas fa-star"></i> Shiny
-                            </button>
-                            <button class="pc-quick-btn pc-max-btn" id="pc-max-stats">
-                                <i class="fas fa-arrow-up"></i> Max IVs
-                            </button>
-                        </div>
-
-                        <div class="pc-stat-preview" id="pc-stat-preview">
-                            <div class="pc-stat-row">
-                                <span class="pc-stat-label">HP</span>
-                                <div class="pc-stat-bar-container">
-                                    <div class="pc-stat-bar stat-hp" id="preview-hp-bar" style="width: 0%;"></div>
-                                </div>
-                                <span class="pc-stat-value" id="preview-hp">--</span>
+                        <div class="preview-name" id="preview-name">Select a Pokemon</div>
+                        <div class="preview-level" id="preview-level">Lv. 100</div>
+                        <div class="preview-badges" id="preview-badges"></div>
+                        <div class="preview-stats">
+                            <div class="preview-stat">
+                                <div class="preview-stat-label">Nature</div>
+                                <div class="preview-stat-value" id="preview-nature">Adamant</div>
                             </div>
-                            <div class="pc-stat-row">
-                                <span class="pc-stat-label">Atk</span>
-                                <div class="pc-stat-bar-container">
-                                    <div class="pc-stat-bar stat-atk" id="preview-atk-bar" style="width: 0%;"></div>
-                                </div>
-                                <span class="pc-stat-value" id="preview-atk">--</span>
+                            <div class="preview-stat">
+                                <div class="preview-stat-label">Ability</div>
+                                <div class="preview-stat-value" id="preview-ability">-</div>
                             </div>
-                            <div class="pc-stat-row">
-                                <span class="pc-stat-label">Def</span>
-                                <div class="pc-stat-bar-container">
-                                    <div class="pc-stat-bar stat-def" id="preview-def-bar" style="width: 0%;"></div>
-                                </div>
-                                <span class="pc-stat-value" id="preview-def">--</span>
+                            <div class="preview-stat">
+                                <div class="preview-stat-label">Item</div>
+                                <div class="preview-stat-value" id="preview-item">-</div>
                             </div>
-                            <div class="pc-stat-row">
-                                <span class="pc-stat-label">SpA</span>
-                                <div class="pc-stat-bar-container">
-                                    <div class="pc-stat-bar stat-spa" id="preview-spa-bar" style="width: 0%;"></div>
-                                </div>
-                                <span class="pc-stat-value" id="preview-spa">--</span>
-                            </div>
-                            <div class="pc-stat-row">
-                                <span class="pc-stat-label">SpD</span>
-                                <div class="pc-stat-bar-container">
-                                    <div class="pc-stat-bar stat-spd" id="preview-spd-bar" style="width: 0%;"></div>
-                                </div>
-                                <span class="pc-stat-value" id="preview-spd">--</span>
-                            </div>
-                            <div class="pc-stat-row">
-                                <span class="pc-stat-label">Spe</span>
-                                <div class="pc-stat-bar-container">
-                                    <div class="pc-stat-bar stat-spe" id="preview-spe-bar" style="width: 0%;"></div>
-                                </div>
-                                <span class="pc-stat-value" id="preview-spe">--</span>
+                            <div class="preview-stat">
+                                <div class="preview-stat-label">Ball</div>
+                                <div class="preview-stat-value" id="preview-ball">Poke</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Editor Panel -->
-                    <div class="pc-editor-panel">
-                        <div class="pc-tabs">
-                            <button class="pc-tab active" data-tab="basics">
-                                <i class="pc-tab-icon fas fa-info-circle"></i>Basics
-                            </button>
-                            <button class="pc-tab" data-tab="stats">
-                                <i class="pc-tab-icon fas fa-chart-bar"></i>Stats
-                            </button>
-                            <button class="pc-tab" data-tab="moves">
-                                <i class="pc-tab-icon fas fa-bolt"></i>Moves
-                            </button>
-                            <button class="pc-tab" data-tab="cosmetic">
-                                <i class="pc-tab-icon fas fa-paint-brush"></i>Cosmetic
-                            </button>
-                            <button class="pc-tab" data-tab="ot">
-                                <i class="pc-tab-icon fas fa-user"></i>OT/Misc
-                            </button>
-                        </div>
+                    <!-- Step 1: Choose Pokemon -->
+                    ${this.createStep1()}
 
-                        <!-- Basics Tab -->
-                        <div class="pc-tab-content active" id="tab-basics">
-                            <div class="pc-form-grid">
-                                <div class="pc-form-group full-width">
-                                    <label class="pc-label">Pokemon Species</label>
-                                    <div class="pc-search-input">
-                                        <i class="fas fa-search"></i>
-                                        <input type="text" class="pc-input" id="pc-species-search" placeholder="Search Pokemon...">
-                                        <div class="pc-search-results" id="pc-species-results"></div>
-                                    </div>
-                                </div>
+                    <!-- Step 2: Basic Details -->
+                    ${this.createStep2()}
 
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Nickname (Optional)</label>
-                                    <input type="text" class="pc-input" id="pc-nickname" placeholder="Enter nickname..." maxlength="12">
-                                </div>
+                    <!-- Step 3: Stats -->
+                    ${this.createStep3()}
 
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Level</label>
-                                    <input type="number" class="pc-input" id="pc-level" value="100" min="1" max="100">
-                                </div>
+                    <!-- Step 4: Moves -->
+                    ${this.createStep4()}
 
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Gender</label>
-                                    <select class="pc-select" id="pc-gender">
-                                        <option value="random">Random</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="genderless">Genderless</option>
-                                    </select>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Nature</label>
-                                    <select class="pc-select" id="pc-nature">
-                                        ${this.natures.map(n => `<option value="${n}">${n}</option>`).join('')}
-                                    </select>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Ability</label>
-                                    <select class="pc-select" id="pc-ability">
-                                        <option value="">Select Pokemon first...</option>
-                                    </select>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Held Item</label>
-                                    <select class="pc-select" id="pc-item">
-                                        ${this.popularItems.map(i => `<option value="${i}">${i}</option>`).join('')}
-                                    </select>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Pokeball</label>
-                                    <select class="pc-select" id="pc-pokeball">
-                                        ${this.pokeballs.map(b => `<option value="${b}">${b}</option>`).join('')}
-                                    </select>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Tera Type</label>
-                                    <select class="pc-select" id="pc-tera">
-                                        <option value="">Match Type</option>
-                                        ${this.teraTypes.map(t => `<option value="${t}">${t}</option>`).join('')}
-                                    </select>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Form</label>
-                                    <select class="pc-select" id="pc-form">
-                                        <option value="0">Default</option>
-                                    </select>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Gigantamax</label>
-                                    <div class="pc-toggle-group">
-                                        <div class="pc-toggle" id="pc-gmax-toggle"></div>
-                                        <span>Enable G-Max</span>
-                                    </div>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Alpha (PLA)</label>
-                                    <div class="pc-toggle-group">
-                                        <div class="pc-toggle" id="pc-alpha-toggle"></div>
-                                        <span>Alpha Pokemon</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Stats Tab -->
-                        <div class="pc-tab-content" id="tab-stats">
-                            ${this.createStatsEditor()}
-                        </div>
-
-                        <!-- Moves Tab -->
-                        <div class="pc-tab-content" id="tab-moves">
-                            <div class="pc-moves-grid">
-                                ${[1, 2, 3, 4].map(i => `
-                                    <div class="pc-move-slot">
-                                        <div class="pc-move-number">${i}</div>
-                                        <div class="pc-move-input">
-                                            <input type="text" class="pc-input" id="pc-move-${i}" placeholder="Search move...">
-                                        </div>
-                                        <div class="pc-move-info" id="pc-move-info-${i}"></div>
-                                    </div>
-                                `).join('')}
-                            </div>
-
-                            <div class="pc-batch-section">
-                                <div class="pc-batch-title"><i class="fas fa-magic"></i> Quick Move Sets</div>
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    <button class="pc-quick-btn" style="background: #3498db; color: #fff;" id="pc-smogon-moves">Load Smogon Set</button>
-                                    <button class="pc-quick-btn" style="background: #e74c3c; color: #fff;" id="pc-clear-moves">Clear All Moves</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Cosmetic Tab -->
-                        <div class="pc-tab-content" id="tab-cosmetic">
-                            <div class="pc-form-grid">
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Friendship (0-255)</label>
-                                    <input type="number" class="pc-input" id="pc-friendship" value="255" min="0" max="255">
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Scale (1-255)</label>
-                                    <input type="number" class="pc-input" id="pc-scale" value="128" min="1" max="255">
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Dynamax Level (0-10)</label>
-                                    <input type="number" class="pc-input" id="pc-dynamax" value="10" min="0" max="10">
-                                </div>
-                            </div>
-
-                            <div class="pc-form-group full-width" style="margin-top: 25px;">
-                                <label class="pc-label"><i class="fas fa-ribbon"></i> Ribbons</label>
-                                <div class="pc-ribbon-grid" id="pc-ribbons-grid">
-                                    ${this.ribbons.map(r => `
-                                        <div class="pc-ribbon-item" data-ribbon="${r}">
-                                            <div class="pc-ribbon-icon"><i class="fas fa-ribbon"></i></div>
-                                            <span class="pc-ribbon-name">${r}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-
-                            <div class="pc-form-group full-width" style="margin-top: 25px;">
-                                <label class="pc-label"><i class="fas fa-certificate"></i> Marks</label>
-                                <div class="pc-ribbon-grid" id="pc-marks-grid">
-                                    ${this.marks.map(m => `
-                                        <div class="pc-ribbon-item" data-mark="${m}">
-                                            <div class="pc-ribbon-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);"><i class="fas fa-certificate"></i></div>
-                                            <span class="pc-ribbon-name">${m}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- OT/Misc Tab -->
-                        <div class="pc-tab-content" id="tab-ot">
-                            <div class="pc-form-grid">
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Original Trainer Name</label>
-                                    <input type="text" class="pc-input" id="pc-ot-name" value="PKM-Universe" maxlength="12">
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Trainer ID (TID)</label>
-                                    <input type="text" class="pc-input" id="pc-tid" value="000000" maxlength="6">
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Secret ID (SID)</label>
-                                    <input type="text" class="pc-input" id="pc-sid" value="0000" maxlength="4">
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Trainer Gender</label>
-                                    <select class="pc-select" id="pc-ot-gender">
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Language</label>
-                                    <select class="pc-select" id="pc-language">
-                                        ${this.languages.map(l => `<option value="${l.code}">${l.name}</option>`).join('')}
-                                    </select>
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Met Location</label>
-                                    <input type="text" class="pc-input" id="pc-met-location" placeholder="e.g., Paldea">
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Met Level</label>
-                                    <input type="number" class="pc-input" id="pc-met-level" value="1" min="1" max="100">
-                                </div>
-
-                                <div class="pc-form-group">
-                                    <label class="pc-label">Met Date</label>
-                                    <input type="date" class="pc-input" id="pc-met-date">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="pc-actions">
-                    <button class="pc-action-btn pc-trade-btn" id="pc-trade-btn">
-                        <i class="fas fa-exchange-alt"></i> Trade Now
-                    </button>
-                    <button class="pc-action-btn pc-copy-btn" id="pc-copy-btn">
-                        <i class="fas fa-copy"></i> Copy
-                    </button>
-                    <button class="pc-action-btn pc-save-btn" id="pc-save-btn">
-                        <i class="fas fa-save"></i> Save
-                    </button>
-                    <button class="pc-action-btn pc-share-btn" id="pc-share-btn">
-                        <i class="fas fa-share-alt"></i> Share
-                    </button>
-                </div>
-
-                <!-- Batch Trading Section -->
-                <div style="padding: 25px; border-top: 2px solid rgba(255,255,255,0.1);">
-                    <div class="pc-batch-title" style="font-size: 1.2rem; margin-bottom: 20px;">
-                        <i class="fas fa-layer-group"></i> Batch Trading (Up to 4 Pokemon)
-                    </div>
-                    <div class="pc-batch-slots">
-                        ${[1, 2, 3, 4].map(i => `
-                            <div class="pc-batch-slot" data-slot="${i}">
-                                <i class="fas fa-plus" style="font-size: 2rem; color: #333;"></i>
-                                <span class="slot-label">Slot ${i}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <button class="pc-action-btn pc-trade-btn" style="margin-top: 20px; width: 100%;" id="pc-batch-trade">
-                        <i class="fas fa-paper-plane"></i> Trade All (Batch)
-                    </button>
+                    <!-- Step 5: Finalize -->
+                    ${this.createStep5()}
                 </div>
             </div>
         `;
 
-        // Insert into the dedicated Pokemon Creator section container
-        const creatorContainer = document.getElementById('pokemon-creator-container');
-        if (creatorContainer) {
-            creatorContainer.appendChild(container);
-        } else {
-            // Fallback: Insert before the existing PKHeX creator if it exists
-            const existingCreator = document.getElementById('pkhex-creator-container');
-            if (existingCreator) {
-                existingCreator.parentNode.insertBefore(container, existingCreator);
-                existingCreator.style.display = 'none'; // Hide the simpler one
-            } else {
-                // Last resort: append to main content
-                const mainContent = document.querySelector('.live-trading-section') ||
-                                   document.querySelector('#dashboard') ||
-                                   document.querySelector('main') ||
-                                   document.body;
-                mainContent.insertBefore(container, mainContent.firstChild);
-            }
-        }
-
-        // Set default date
-        document.getElementById('pc-met-date').value = new Date().toISOString().split('T')[0];
+        this.updateProgress();
     }
 
-    createStatsEditor() {
+    createProgressSteps() {
+        const steps = [
+            { num: 1, label: 'Pokemon' },
+            { num: 2, label: 'Details' },
+            { num: 3, label: 'Stats' },
+            { num: 4, label: 'Moves' },
+            { num: 5, label: 'Finalize' }
+        ];
+
+        return steps.map(step => `
+            <div class="wizard-step-indicator ${step.num === 1 ? 'active' : ''}" data-step="${step.num}">
+                <div class="wizard-step-ball ${step.num === 1 ? 'active' : ''}"></div>
+                <span class="wizard-step-label">${step.label}</span>
+            </div>
+        `).join('');
+    }
+
+    createStep1() {
+        return `
+            <div class="wizard-step-content active" id="step-1">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <h2 class="step-title">Choose Your Pokemon</h2>
+                    <p class="step-subtitle">Search and select the Pokemon you want to create</p>
+                </div>
+
+                <div class="wizard-form-grid single">
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">Game Version</label>
+                        <select class="wizard-select" id="wizard-game">
+                            <option value="za">Legends: Z-A</option>
+                            <option value="sv" selected>Scarlet / Violet</option>
+                            <option value="swsh">Sword / Shield</option>
+                            <option value="bdsp">Brilliant Diamond / Shining Pearl</option>
+                            <option value="pla">Legends: Arceus</option>
+                            <option value="lgpe">Let's Go Pikachu/Eevee</option>
+                        </select>
+                    </div>
+
+                    <div class="wizard-form-group pokemon-search-container">
+                        <label class="wizard-label">Pokemon Name</label>
+                        <input type="text" class="wizard-input" id="wizard-pokemon-search"
+                               placeholder="Type to search... (e.g., Pikachu, Charizard)" autocomplete="off">
+                        <div class="pokemon-search-results" id="pokemon-search-results"></div>
+                    </div>
+
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">Nickname (Optional)</label>
+                        <input type="text" class="wizard-input" id="wizard-nickname"
+                               placeholder="Give your Pokemon a nickname">
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <div></div>
+                    <button class="wizard-btn wizard-btn-next" onclick="pokemonWizard.nextStep()">
+                        Continue <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    createStep2() {
+        return `
+            <div class="wizard-step-content" id="step-2">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h2 class="step-title">Basic Details</h2>
+                    <p class="step-subtitle">Configure level, nature, ability, and more</p>
+                </div>
+
+                <div class="wizard-form-grid">
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">Level</label>
+                        <input type="number" class="wizard-input" id="wizard-level"
+                               value="100" min="1" max="100">
+                    </div>
+
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">Nature</label>
+                        <select class="wizard-select" id="wizard-nature">
+                            ${this.natures.map(n => `
+                                <option value="${n.name}" ${n.name === 'Adamant' ? 'selected' : ''}>
+                                    ${n.name}${n.plus ? ` (+${n.plus}, -${n.minus})` : ' (Neutral)'}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">Ability</label>
+                        <select class="wizard-select" id="wizard-ability">
+                            <option value="">Select Pokemon first</option>
+                        </select>
+                    </div>
+
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">Held Item</label>
+                        <input type="text" class="wizard-input" id="wizard-item"
+                               placeholder="e.g., Leftovers, Choice Band">
+                    </div>
+
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">Pokeball</label>
+                        <select class="wizard-select" id="wizard-pokeball">
+                            ${this.pokeballs.map(ball => `
+                                <option value="${ball}">${ball}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">Tera Type</label>
+                        <select class="wizard-select" id="wizard-tera">
+                            ${this.teraTypes.map(type => `
+                                <option value="${type}">${type}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+
+                    <div class="wizard-form-group full-width">
+                        <div class="wizard-toggle-group">
+                            <span class="wizard-toggle-label">✨ Shiny Pokemon</span>
+                            <label class="wizard-toggle">
+                                <input type="checkbox" id="wizard-shiny">
+                                <span class="wizard-toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="wizard-btn wizard-btn-back" onclick="pokemonWizard.prevStep()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="wizard-btn wizard-btn-next" onclick="pokemonWizard.nextStep()">
+                        Continue <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    createStep3() {
         const stats = [
-            { key: 'hp', name: 'HP' },
-            { key: 'atk', name: 'Attack' },
-            { key: 'def', name: 'Defense' },
-            { key: 'spa', name: 'Sp. Attack' },
-            { key: 'spd', name: 'Sp. Defense' },
-            { key: 'spe', name: 'Speed' }
+            { key: 'hp', name: 'HP', color: '#ff5555' },
+            { key: 'atk', name: 'ATK', color: '#ff8800' },
+            { key: 'def', name: 'DEF', color: '#ffcc00' },
+            { key: 'spa', name: 'SPA', color: '#00d4ff' },
+            { key: 'spd', name: 'SPD', color: '#00ff88' },
+            { key: 'spe', name: 'SPE', color: '#ff66aa' }
         ];
 
         return `
-            ${stats.map(stat => `
-                <div class="pc-stat-editor">
-                    <div class="pc-stat-header">
-                        <span class="pc-stat-name" id="stat-name-${stat.key}">${stat.name}</span>
-                        <div class="pc-stat-values">
-                            <span>Base: <strong id="base-${stat.key}">--</strong></span>
-                            <span>Final: <strong id="final-${stat.key}">--</strong></span>
-                        </div>
-                    </div>
-                    <div class="pc-iv-ev-group">
-                        <span style="color: #888; font-size: 0.8rem; width: 25px;">IV</span>
-                        <input type="range" class="pc-slider iv-slider" id="iv-${stat.key}" min="0" max="31" value="31">
-                        <span class="pc-slider-value" id="iv-val-${stat.key}">31</span>
-                        <button class="pc-hyper-train" id="ht-${stat.key}" title="Hyper Train">HT</button>
-                    </div>
-                    <div class="pc-iv-ev-group" style="margin-top: 10px;">
-                        <span style="color: #888; font-size: 0.8rem; width: 25px;">EV</span>
-                        <input type="range" class="pc-slider ev-slider" id="ev-${stat.key}" min="0" max="252" value="0">
-                        <span class="pc-slider-value" id="ev-val-${stat.key}">0</span>
-                    </div>
+            <div class="wizard-step-content" id="step-3">
+                <div class="step-header">
+                    <span class="step-number">3</span>
+                    <h2 class="step-title">Stats Configuration</h2>
+                    <p class="step-subtitle">Set IVs and EVs for your Pokemon</p>
                 </div>
-            `).join('')}
 
-            <div class="pc-ev-total">
-                <div style="display: flex; justify-content: space-between;">
-                    <span>EV Total</span>
-                    <span><strong id="ev-total">0</strong> / 510</span>
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="pokemonWizard.maxIVs()">Max All IVs (31)</button>
+                    <button class="quick-action-btn" onclick="pokemonWizard.resetEVs()">Reset EVs</button>
+                    <button class="quick-action-btn" onclick="pokemonWizard.competitiveSpread()">Competitive Spread</button>
                 </div>
-                <div class="pc-ev-bar">
-                    <div class="pc-ev-fill" id="ev-fill" style="width: 0%;"></div>
+
+                <div class="stats-circular-grid">
+                    ${stats.map(stat => `
+                        <div class="stat-circle-container">
+                            <div class="stat-circle" id="circle-${stat.key}" style="--stat-color: ${stat.color}; --stat-percent: 100;">
+                                <div class="stat-circle-inner">
+                                    <div class="stat-circle-value" id="total-${stat.key}">31</div>
+                                    <div class="stat-circle-label">${stat.name}</div>
+                                </div>
+                            </div>
+                            <div class="stat-inputs">
+                                <div>
+                                    <input type="number" class="stat-input-small iv-input" id="iv-${stat.key}"
+                                           value="31" min="0" max="31" data-stat="${stat.key}">
+                                    <div class="stat-input-label">IV</div>
+                                </div>
+                                <div>
+                                    <input type="number" class="stat-input-small ev-input" id="ev-${stat.key}"
+                                           value="0" min="0" max="252" data-stat="${stat.key}">
+                                    <div class="stat-input-label">EV</div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="ev-total-bar">
+                    <div class="ev-total-header">
+                        <span class="ev-total-label">EV Total</span>
+                        <span class="ev-total-value" id="ev-total-value">0 / 510</span>
+                    </div>
+                    <div class="ev-total-progress">
+                        <div class="ev-total-fill" id="ev-total-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="wizard-btn wizard-btn-back" onclick="pokemonWizard.prevStep()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="wizard-btn wizard-btn-next" onclick="pokemonWizard.nextStep()">
+                        Continue <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
+        `;
+    }
 
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;">
-                <button class="pc-quick-btn" style="background: #27ae60; color: #fff;" data-spread="physical">Physical Sweeper</button>
-                <button class="pc-quick-btn" style="background: #3498db; color: #fff;" data-spread="special">Special Sweeper</button>
-                <button class="pc-quick-btn" style="background: #f39c12; color: #fff;" data-spread="tank">Physical Tank</button>
-                <button class="pc-quick-btn" style="background: #9b59b6; color: #fff;" data-spread="spdef">Special Tank</button>
-                <button class="pc-quick-btn" style="background: #e74c3c; color: #fff;" data-spread="clear">Clear EVs</button>
+    createStep4() {
+        return `
+            <div class="wizard-step-content" id="step-4">
+                <div class="step-header">
+                    <span class="step-number">4</span>
+                    <h2 class="step-title">Moveset</h2>
+                    <p class="step-subtitle">Choose up to 4 moves for your Pokemon</p>
+                </div>
+
+                <div class="moves-card-grid">
+                    ${[1, 2, 3, 4].map(num => `
+                        <div class="move-card">
+                            <div class="move-card-header">
+                                <span class="move-slot-number">${num}</span>
+                                <span class="move-card-title">Move Slot ${num}</span>
+                            </div>
+                            <input type="text" class="move-input" id="wizard-move-${num}"
+                                   placeholder="Enter move name..." data-slot="${num}">
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="wizard-btn wizard-btn-back" onclick="pokemonWizard.prevStep()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="wizard-btn wizard-btn-next" onclick="pokemonWizard.nextStep()">
+                        Continue <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    createStep5() {
+        return `
+            <div class="wizard-step-content" id="step-5">
+                <div class="step-header">
+                    <span class="step-number">5</span>
+                    <h2 class="step-title">Finalize & Trade</h2>
+                    <p class="step-subtitle">Review your Pokemon and generate the trade command</p>
+                </div>
+
+                <div class="wizard-form-grid">
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">OT Name</label>
+                        <input type="text" class="wizard-input" id="wizard-ot-name" value="PKM-Universe">
+                    </div>
+                    <div class="wizard-form-group">
+                        <label class="wizard-label">TID</label>
+                        <input type="text" class="wizard-input" id="wizard-tid" value="000000">
+                    </div>
+                </div>
+
+                <div class="trade-output">
+                    <div class="trade-output-header">
+                        <span class="trade-output-title">Discord Command</span>
+                        <button class="trade-output-copy" onclick="pokemonWizard.copyCommand()">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <div class="trade-output-code" id="trade-command">
+                        /pkhex create pokemon:Pikachu
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="wizard-btn wizard-btn-back" onclick="pokemonWizard.prevStep()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button class="wizard-btn wizard-btn-complete" onclick="pokemonWizard.openDiscord()">
+                        <i class="fab fa-discord"></i> Trade on Discord
+                    </button>
+                </div>
             </div>
         `;
     }
 
     bindEvents() {
-        // Tab switching
-        document.querySelectorAll('.pc-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.pc-tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.pc-tab-content').forEach(c => c.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
-            });
-        });
-
-        // Game selection
-        document.querySelectorAll('.pc-game-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.pc-game-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                this.pokemon.game = btn.dataset.game;
-            });
-        });
-
         // Pokemon search
-        const searchInput = document.getElementById('pc-species-search');
-        const searchResults = document.getElementById('pc-species-results');
+        const searchInput = document.getElementById('wizard-pokemon-search');
+        const searchResults = document.getElementById('pokemon-search-results');
 
-        searchInput?.addEventListener('input', async (e) => {
-            const query = e.target.value.toLowerCase();
-            if (query.length < 2) {
-                searchResults.classList.remove('show');
-                return;
-            }
-
-            // Fetch matching Pokemon
-            try {
-                const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1025`);
-                const data = await response.json();
-                const matches = data.results
-                    .filter(p => p.name.includes(query))
-                    .slice(0, 10);
-
-                if (matches.length > 0) {
-                    searchResults.innerHTML = matches.map(p => {
-                        const id = p.url.split('/').filter(Boolean).pop();
-                        return `
-                            <div class="pc-search-result" data-name="${p.name}" data-id="${id}">
-                                <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png" alt="${p.name}">
-                                <span>#${id} ${p.name.charAt(0).toUpperCase() + p.name.slice(1)}</span>
-                            </div>
-                        `;
-                    }).join('');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => this.searchPokemon(e.target.value));
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value.length >= 2) {
                     searchResults.classList.add('show');
-
-                    // Bind click events
-                    searchResults.querySelectorAll('.pc-search-result').forEach(result => {
-                        result.addEventListener('click', () => {
-                            this.loadPokemon(result.dataset.name, result.dataset.id);
-                            searchResults.classList.remove('show');
-                            searchInput.value = result.dataset.name.charAt(0).toUpperCase() + result.dataset.name.slice(1);
-                        });
-                    });
-                } else {
-                    searchResults.classList.remove('show');
                 }
-            } catch (error) {
-                console.error('Search error:', error);
-            }
-        });
+            });
+        }
 
-        // Close search on click outside
+        // Close search results when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.pc-search-input')) {
-                searchResults.classList.remove('show');
+            if (!e.target.closest('.pokemon-search-container')) {
+                searchResults?.classList.remove('show');
             }
         });
 
-        // Shiny toggle
-        document.getElementById('pc-shiny-toggle')?.addEventListener('click', (e) => {
-            e.currentTarget.classList.toggle('active');
-            this.pokemon.shiny = e.currentTarget.classList.contains('active');
-            this.updateSprite();
-        });
-
-        // Max IVs button
-        document.getElementById('pc-max-stats')?.addEventListener('click', () => {
-            Object.keys(this.pokemon.ivs).forEach(stat => {
-                this.pokemon.ivs[stat] = 31;
-                document.getElementById(`iv-${stat}`).value = 31;
-                document.getElementById(`iv-val-${stat}`).textContent = 31;
-            });
-            this.updateStatPreview();
-        });
-
-        // IV/EV sliders
-        ['hp', 'atk', 'def', 'spa', 'spd', 'spe'].forEach(stat => {
-            document.getElementById(`iv-${stat}`)?.addEventListener('input', (e) => {
-                this.pokemon.ivs[stat] = parseInt(e.target.value);
-                document.getElementById(`iv-val-${stat}`).textContent = e.target.value;
-                this.updateStatPreview();
-            });
-
-            document.getElementById(`ev-${stat}`)?.addEventListener('input', (e) => {
-                const newValue = parseInt(e.target.value);
-                const currentTotal = Object.values(this.pokemon.evs).reduce((a, b) => a + b, 0);
-                const oldValue = this.pokemon.evs[stat];
-                const newTotal = currentTotal - oldValue + newValue;
-
-                if (newTotal <= 510) {
-                    this.pokemon.evs[stat] = newValue;
-                    document.getElementById(`ev-val-${stat}`).textContent = newValue;
-                } else {
-                    const maxAllowed = 510 - (currentTotal - oldValue);
-                    this.pokemon.evs[stat] = maxAllowed;
-                    e.target.value = maxAllowed;
-                    document.getElementById(`ev-val-${stat}`).textContent = maxAllowed;
-                }
-                this.updateEVTotal();
-                this.updateStatPreview();
-            });
-
-            // Hyper Training
-            document.getElementById(`ht-${stat}`)?.addEventListener('click', (e) => {
-                e.currentTarget.classList.toggle('active');
-                this.pokemon.hyperTrained[stat] = e.currentTarget.classList.contains('active');
-                this.updateStatPreview();
-            });
-        });
-
-        // EV spread presets
-        document.querySelectorAll('[data-spread]').forEach(btn => {
-            btn.addEventListener('click', () => this.applyEVSpread(btn.dataset.spread));
-        });
-
-        // Nature change
-        document.getElementById('pc-nature')?.addEventListener('change', (e) => {
-            this.pokemon.nature = e.target.value;
-            this.updateNatureHighlights();
-            this.updateStatPreview();
-        });
-
-        // Level change
-        document.getElementById('pc-level')?.addEventListener('change', (e) => {
-            this.pokemon.level = Math.min(100, Math.max(1, parseInt(e.target.value) || 100));
-            e.target.value = this.pokemon.level;
-            this.updateStatPreview();
-        });
-
-        // Toggle switches
-        ['pc-gmax-toggle', 'pc-alpha-toggle'].forEach(id => {
-            document.getElementById(id)?.addEventListener('click', (e) => {
-                e.currentTarget.classList.toggle('active');
-            });
-        });
-
-        // Ribbons selection
-        document.querySelectorAll('.pc-ribbon-item[data-ribbon]').forEach(item => {
-            item.addEventListener('click', () => {
-                item.classList.toggle('selected');
-                const ribbon = item.dataset.ribbon;
-                if (item.classList.contains('selected')) {
-                    this.pokemon.ribbons.push(ribbon);
-                } else {
-                    this.pokemon.ribbons = this.pokemon.ribbons.filter(r => r !== ribbon);
+        // Step indicators click
+        document.querySelectorAll('.wizard-step-indicator').forEach(indicator => {
+            indicator.addEventListener('click', () => {
+                const step = parseInt(indicator.dataset.step);
+                if (step <= this.currentStep) {
+                    this.goToStep(step);
                 }
             });
         });
 
-        // Marks selection
-        document.querySelectorAll('.pc-ribbon-item[data-mark]').forEach(item => {
-            item.addEventListener('click', () => {
-                item.classList.toggle('selected');
-                const mark = item.dataset.mark;
-                if (item.classList.contains('selected')) {
-                    this.pokemon.marks.push(mark);
-                } else {
-                    this.pokemon.marks = this.pokemon.marks.filter(m => m !== mark);
-                }
-            });
-        });
+        // Form change listeners
+        this.bindFormListeners();
 
-        // Action buttons
-        document.getElementById('pc-trade-btn')?.addEventListener('click', () => this.trade());
-        document.getElementById('pc-copy-btn')?.addEventListener('click', () => this.copyShowdown());
-        document.getElementById('pc-save-btn')?.addEventListener('click', () => this.savePokemon());
-        document.getElementById('pc-share-btn')?.addEventListener('click', () => this.sharePokemon());
-
-        // Batch slots
-        document.querySelectorAll('.pc-batch-slot').forEach(slot => {
-            slot.addEventListener('click', () => this.addToBatch(slot));
+        // IV/EV inputs
+        document.querySelectorAll('.iv-input, .ev-input').forEach(input => {
+            input.addEventListener('input', () => this.updateStatsDisplay());
         });
     }
 
-    async loadPokemon(name, id) {
+    bindFormListeners() {
+        const elements = {
+            'wizard-game': 'game',
+            'wizard-level': 'level',
+            'wizard-nature': 'nature',
+            'wizard-item': 'heldItem',
+            'wizard-pokeball': 'pokeball',
+            'wizard-tera': 'teraType',
+            'wizard-shiny': 'shiny',
+            'wizard-nickname': 'nickname'
+        };
+
+        Object.entries(elements).forEach(([id, prop]) => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', () => {
+                    if (el.type === 'checkbox') {
+                        this.pokemon[prop] = el.checked;
+                    } else {
+                        this.pokemon[prop] = el.value;
+                    }
+                    this.updatePreview();
+                    this.updateTradeCommand();
+                });
+            }
+        });
+
+        // Move inputs
+        [1, 2, 3, 4].forEach(num => {
+            const input = document.getElementById(`wizard-move-${num}`);
+            if (input) {
+                input.addEventListener('input', () => {
+                    this.pokemon.moves[num - 1] = input.value;
+                    this.updateTradeCommand();
+                });
+            }
+        });
+    }
+
+    async searchPokemon(query) {
+        const results = document.getElementById('pokemon-search-results');
+        if (!results) return;
+
+        if (query.length < 2) {
+            results.classList.remove('show');
+            return;
+        }
+
         try {
-            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id || name}`);
+            // Use PokeAPI to search
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=1000`);
             const data = await response.json();
 
-            this.pokemon.species = data.name;
-            this.pokemon.speciesId = data.id;
+            const matches = data.results.filter(p =>
+                p.name.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 8);
 
-            // Store base stats
-            this.baseStats = {};
-            data.stats.forEach(s => {
-                const statMap = {
-                    'hp': 'hp', 'attack': 'atk', 'defense': 'def',
-                    'special-attack': 'spa', 'special-defense': 'spd', 'speed': 'spe'
-                };
-                this.baseStats[statMap[s.stat.name]] = s.base_stat;
-            });
+            if (matches.length > 0) {
+                results.innerHTML = matches.map(p => {
+                    const id = p.url.split('/').filter(Boolean).pop();
+                    return `
+                        <div class="pokemon-search-item" data-name="${p.name}" data-id="${id}">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png"
+                                 alt="${p.name}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
+                            <span>${this.capitalize(p.name)}</span>
+                        </div>
+                    `;
+                }).join('');
 
-            // Update preview
-            this.updateSprite();
-            document.getElementById('pc-pokemon-name').textContent =
-                data.name.charAt(0).toUpperCase() + data.name.slice(1);
+                results.querySelectorAll('.pokemon-search-item').forEach(item => {
+                    item.addEventListener('click', () => this.selectPokemon(item.dataset.name, item.dataset.id));
+                });
 
-            // Types
-            const typesContainer = document.getElementById('pc-pokemon-types');
-            typesContainer.innerHTML = data.types.map(t =>
-                `<span class="pc-type-badge type-${t.type.name}">${t.type.name}</span>`
-            ).join('');
-
-            // Abilities
-            this.abilities = data.abilities;
-            const abilitySelect = document.getElementById('pc-ability');
-            abilitySelect.innerHTML = data.abilities.map((a, i) =>
-                `<option value="${i}">${a.ability.name.replace(/-/g, ' ')}${a.is_hidden ? ' (HA)' : ''}</option>`
-            ).join('');
-
-            // Update stat base values
-            Object.entries(this.baseStats).forEach(([stat, value]) => {
-                document.getElementById(`base-${stat}`).textContent = value;
-            });
-
-            this.updateStatPreview();
-            this.updateNatureHighlights();
-
+                results.classList.add('show');
+            } else {
+                results.classList.remove('show');
+            }
         } catch (error) {
-            console.error('Error loading Pokemon:', error);
+            console.error('Search error:', error);
         }
     }
 
-    updateSprite() {
-        const spriteContainer = document.getElementById('pc-sprite');
-        if (!this.pokemon.speciesId) {
-            spriteContainer.innerHTML = '<i class="fas fa-question"></i>';
-            spriteContainer.className = 'pc-sprite-placeholder';
-            return;
+    async selectPokemon(name, id) {
+        this.pokemon.species = this.capitalize(name);
+        this.pokemon.speciesId = parseInt(id);
+
+        document.getElementById('wizard-pokemon-search').value = this.pokemon.species;
+        document.getElementById('pokemon-search-results').classList.remove('show');
+
+        // Fetch pokemon data for abilities
+        try {
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+            const data = await response.json();
+
+            // Update abilities dropdown
+            const abilitySelect = document.getElementById('wizard-ability');
+            if (abilitySelect) {
+                abilitySelect.innerHTML = data.abilities.map(a =>
+                    `<option value="${this.capitalize(a.ability.name)}">${this.capitalize(a.ability.name)}${a.is_hidden ? ' (Hidden)' : ''}</option>`
+                ).join('');
+                this.pokemon.ability = this.capitalize(data.abilities[0].ability.name);
+            }
+        } catch (error) {
+            console.error('Error fetching pokemon data:', error);
         }
 
-        const spriteUrl = this.pokemon.shiny
-            ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${this.pokemon.speciesId}.png`
-            : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${this.pokemon.speciesId}.png`;
-
-        spriteContainer.innerHTML = `<img src="${spriteUrl}" alt="${this.pokemon.species}" class="pc-sprite ${this.pokemon.shiny ? 'shiny' : ''}">`;
-        spriteContainer.className = '';
+        this.updatePreview();
+        this.updateTradeCommand();
     }
 
-    updateStatPreview() {
+    updatePreview() {
+        const sprite = document.getElementById('preview-sprite');
+        const name = document.getElementById('preview-name');
+        const level = document.getElementById('preview-level');
+        const badges = document.getElementById('preview-badges');
+        const nature = document.getElementById('preview-nature');
+        const ability = document.getElementById('preview-ability');
+        const item = document.getElementById('preview-item');
+        const ball = document.getElementById('preview-ball');
+
+        if (this.pokemon.speciesId) {
+            const shinyPath = this.pokemon.shiny ? 'shiny/' : '';
+            sprite.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shinyPath}${this.pokemon.speciesId}.png`;
+            sprite.classList.toggle('shiny', this.pokemon.shiny);
+        }
+
+        name.textContent = this.pokemon.nickname || this.pokemon.species || 'Select a Pokemon';
+        level.textContent = `Lv. ${this.pokemon.level}`;
+
+        let badgesHtml = '';
+        if (this.pokemon.shiny) {
+            badgesHtml += '<span class="preview-badge shiny">✨ Shiny</span>';
+        }
+        badgesHtml += `<span class="preview-badge game">${this.pokemon.game.toUpperCase()}</span>`;
+        badges.innerHTML = badgesHtml;
+
+        nature.textContent = this.pokemon.nature;
+        ability.textContent = this.pokemon.ability || '-';
+        item.textContent = this.pokemon.heldItem || '-';
+        ball.textContent = this.pokemon.pokeball.replace(' Ball', '');
+    }
+
+    updateStatsDisplay() {
         const stats = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
-        const maxStat = 700;
+        let evTotal = 0;
 
         stats.forEach(stat => {
-            const baseStat = this.baseStats[stat] || 0;
-            const iv = this.pokemon.hyperTrained[stat] ? 31 : this.pokemon.ivs[stat];
-            const ev = this.pokemon.evs[stat];
-            const level = this.pokemon.level;
+            const ivInput = document.getElementById(`iv-${stat}`);
+            const evInput = document.getElementById(`ev-${stat}`);
+            const circle = document.getElementById(`circle-${stat}`);
+            const total = document.getElementById(`total-${stat}`);
 
-            let finalStat;
-            if (stat === 'hp') {
-                finalStat = Math.floor(((2 * baseStat + iv + Math.floor(ev / 4)) * level) / 100) + level + 10;
+            if (ivInput && evInput) {
+                const iv = parseInt(ivInput.value) || 0;
+                const ev = parseInt(evInput.value) || 0;
+                evTotal += ev;
+
+                this.pokemon.ivs[stat] = iv;
+                this.pokemon.evs[stat] = ev;
+
+                // Update circle visual
+                const percent = (iv / 31) * 100;
+                circle.style.setProperty('--stat-percent', percent);
+                total.textContent = iv;
+            }
+        });
+
+        // Update EV total bar
+        const evTotalValue = document.getElementById('ev-total-value');
+        const evTotalFill = document.getElementById('ev-total-fill');
+
+        if (evTotalValue && evTotalFill) {
+            evTotalValue.textContent = `${evTotal} / 510`;
+            evTotalFill.style.width = `${(evTotal / 510) * 100}%`;
+
+            if (evTotal > 510) {
+                evTotalValue.classList.add('warning');
+                evTotalFill.classList.add('warning');
             } else {
-                const natureEffect = this.natureEffects[this.pokemon.nature];
-                let natureMod = 1;
-                if (natureEffect.plus === stat) natureMod = 1.1;
-                if (natureEffect.minus === stat) natureMod = 0.9;
-
-                finalStat = Math.floor((Math.floor(((2 * baseStat + iv + Math.floor(ev / 4)) * level) / 100) + 5) * natureMod);
+                evTotalValue.classList.remove('warning');
+                evTotalFill.classList.remove('warning');
             }
+        }
 
-            document.getElementById(`preview-${stat}`).textContent = finalStat;
-            document.getElementById(`final-${stat}`).textContent = finalStat;
-            document.getElementById(`preview-${stat}-bar`).style.width = `${Math.min(100, (finalStat / maxStat) * 100)}%`;
+        this.updateTradeCommand();
+    }
+
+    updateTradeCommand() {
+        const commandEl = document.getElementById('trade-command');
+        if (!commandEl) return;
+
+        let cmd = `/pkhex create pokemon:${this.pokemon.species || 'Pikachu'}`;
+
+        if (this.pokemon.shiny) cmd += ` shiny:True`;
+        if (this.pokemon.level !== 100) cmd += ` level:${this.pokemon.level}`;
+        if (this.pokemon.nature !== 'Hardy') cmd += ` nature:${this.pokemon.nature}`;
+        if (this.pokemon.ability) cmd += ` ability:${this.pokemon.ability}`;
+        if (this.pokemon.heldItem) cmd += ` helditem:${this.pokemon.heldItem}`;
+        if (this.pokemon.teraType !== 'Normal') cmd += ` teratype:${this.pokemon.teraType}`;
+
+        // Add moves
+        this.pokemon.moves.forEach((move, i) => {
+            if (move) cmd += ` move${i + 1}:${move}`;
+        });
+
+        // Add IVs if not all 31
+        const ivs = this.pokemon.ivs;
+        if (Object.values(ivs).some(v => v !== 31)) {
+            cmd += ` ivs:${ivs.hp}/${ivs.atk}/${ivs.def}/${ivs.spa}/${ivs.spd}/${ivs.spe}`;
+        }
+
+        // Add EVs if any set
+        const evs = this.pokemon.evs;
+        if (Object.values(evs).some(v => v > 0)) {
+            cmd += ` evs:${evs.hp}/${evs.atk}/${evs.def}/${evs.spa}/${evs.spd}/${evs.spe}`;
+        }
+
+        commandEl.textContent = cmd;
+    }
+
+    updateProgress() {
+        const fill = document.getElementById('progress-fill');
+        const percent = ((this.currentStep - 1) / (this.totalSteps - 1)) * 100;
+
+        // Account for padding in progress bar
+        const adjustedPercent = percent * 0.85; // Scale to fit between step indicators
+        fill.style.width = `${adjustedPercent}%`;
+
+        // Update step indicators
+        document.querySelectorAll('.wizard-step-indicator').forEach((indicator, index) => {
+            const step = index + 1;
+            const ball = indicator.querySelector('.wizard-step-ball');
+
+            indicator.classList.remove('active', 'completed');
+            ball.classList.remove('active', 'completed');
+
+            if (step === this.currentStep) {
+                indicator.classList.add('active');
+                ball.classList.add('active');
+            } else if (step < this.currentStep) {
+                indicator.classList.add('completed');
+                ball.classList.add('completed');
+            }
         });
     }
 
-    updateNatureHighlights() {
-        const natureEffect = this.natureEffects[this.pokemon.nature];
+    goToStep(step) {
+        document.querySelectorAll('.wizard-step-content').forEach(content => {
+            content.classList.remove('active');
+        });
 
+        const targetStep = document.getElementById(`step-${step}`);
+        if (targetStep) {
+            targetStep.classList.add('active');
+            this.currentStep = step;
+            this.updateProgress();
+        }
+    }
+
+    nextStep() {
+        if (this.currentStep < this.totalSteps) {
+            this.goToStep(this.currentStep + 1);
+        }
+    }
+
+    prevStep() {
+        if (this.currentStep > 1) {
+            this.goToStep(this.currentStep - 1);
+        }
+    }
+
+    maxIVs() {
         ['hp', 'atk', 'def', 'spa', 'spd', 'spe'].forEach(stat => {
-            const nameEl = document.getElementById(`stat-name-${stat}`);
-            if (nameEl) {
-                nameEl.classList.remove('boosted', 'reduced');
-                if (natureEffect.plus === stat) nameEl.classList.add('boosted');
-                if (natureEffect.minus === stat) nameEl.classList.add('reduced');
-            }
+            const input = document.getElementById(`iv-${stat}`);
+            if (input) input.value = 31;
+        });
+        this.updateStatsDisplay();
+    }
+
+    resetEVs() {
+        ['hp', 'atk', 'def', 'spa', 'spd', 'spe'].forEach(stat => {
+            const input = document.getElementById(`ev-${stat}`);
+            if (input) input.value = 0;
+        });
+        this.updateStatsDisplay();
+    }
+
+    competitiveSpread() {
+        // Physical attacker spread: 252 Atk, 252 Spe, 4 HP
+        document.getElementById('ev-hp').value = 4;
+        document.getElementById('ev-atk').value = 252;
+        document.getElementById('ev-def').value = 0;
+        document.getElementById('ev-spa').value = 0;
+        document.getElementById('ev-spd').value = 0;
+        document.getElementById('ev-spe').value = 252;
+        this.updateStatsDisplay();
+    }
+
+    copyCommand() {
+        const command = document.getElementById('trade-command').textContent;
+        navigator.clipboard.writeText(command).then(() => {
+            const btn = document.querySelector('.trade-output-copy');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
         });
     }
 
-    updateEVTotal() {
-        const total = Object.values(this.pokemon.evs).reduce((a, b) => a + b, 0);
-        document.getElementById('ev-total').textContent = total;
-        const fill = document.getElementById('ev-fill');
-        fill.style.width = `${(total / 510) * 100}%`;
-        fill.classList.toggle('over', total > 510);
+    openDiscord() {
+        this.copyCommand();
+        window.open('https://discord.gg/pkm-universe', '_blank');
     }
 
-    applyEVSpread(spread) {
-        const spreads = {
-            physical: { hp: 0, atk: 252, def: 0, spa: 0, spd: 4, spe: 252 },
-            special: { hp: 0, atk: 0, def: 0, spa: 252, spd: 4, spe: 252 },
-            tank: { hp: 252, atk: 0, def: 252, spa: 0, spd: 4, spe: 0 },
-            spdef: { hp: 252, atk: 0, def: 4, spa: 0, spd: 252, spe: 0 },
-            clear: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }
-        };
-
-        if (spreads[spread]) {
-            this.pokemon.evs = { ...spreads[spread] };
-            Object.entries(this.pokemon.evs).forEach(([stat, value]) => {
-                document.getElementById(`ev-${stat}`).value = value;
-                document.getElementById(`ev-val-${stat}`).textContent = value;
-            });
-            this.updateEVTotal();
-            this.updateStatPreview();
-        }
-    }
-
-    generateShowdown() {
-        if (!this.pokemon.species) return '';
-
-        const name = this.pokemon.species.charAt(0).toUpperCase() + this.pokemon.species.slice(1);
-        const nickname = document.getElementById('pc-nickname')?.value;
-        const item = document.getElementById('pc-item')?.value;
-        const abilityIndex = document.getElementById('pc-ability')?.value;
-        const ability = this.abilities[abilityIndex]?.ability.name.replace(/-/g, ' ') || '';
-
-        const evStrings = [];
-        Object.entries(this.pokemon.evs).forEach(([stat, value]) => {
-            if (value > 0) {
-                const statNames = { hp: 'HP', atk: 'Atk', def: 'Def', spa: 'SpA', spd: 'SpD', spe: 'Spe' };
-                evStrings.push(`${value} ${statNames[stat]}`);
-            }
-        });
-
-        const ivStrings = [];
-        Object.entries(this.pokemon.ivs).forEach(([stat, value]) => {
-            if (value < 31) {
-                const statNames = { hp: 'HP', atk: 'Atk', def: 'Def', spa: 'SpA', spd: 'SpD', spe: 'Spe' };
-                ivStrings.push(`${value} ${statNames[stat]}`);
-            }
-        });
-
-        const moves = [1, 2, 3, 4].map(i => document.getElementById(`pc-move-${i}`)?.value).filter(m => m);
-
-        let showdown = nickname ? `${nickname} (${name})` : name;
-        if (item && item !== 'None') showdown += ` @ ${item}`;
-        showdown += '\n';
-        showdown += `Ability: ${ability}\n`;
-        if (this.pokemon.shiny) showdown += `Shiny: Yes\n`;
-        const tera = document.getElementById('pc-tera')?.value;
-        if (tera) showdown += `Tera Type: ${tera}\n`;
-        if (evStrings.length) showdown += `EVs: ${evStrings.join(' / ')}\n`;
-        showdown += `${this.pokemon.nature} Nature\n`;
-        if (ivStrings.length) showdown += `IVs: ${ivStrings.join(' / ')}\n`;
-        moves.forEach(m => showdown += `- ${m}\n`);
-
-        return showdown;
-    }
-
-    trade() {
-        if (!this.pokemon.species) {
-            alert('Please select a Pokemon first!');
-            return;
-        }
-
-        const showdown = this.generateShowdown();
-        navigator.clipboard.writeText(showdown).then(() => {
-            alert('Pokemon data copied! Paste it in the Discord trade channel.\n\n' + showdown);
-        });
-
-        // Trigger celebration
-        if (window.tradeAnimations) {
-            window.tradeAnimations.pokeballBurst(window.innerWidth / 2, window.innerHeight / 2);
-        }
-    }
-
-    copyShowdown() {
-        const showdown = this.generateShowdown();
-        if (!showdown) {
-            alert('Please select a Pokemon first!');
-            return;
-        }
-
-        navigator.clipboard.writeText(showdown).then(() => {
-            alert('Showdown format copied to clipboard!');
-        });
-    }
-
-    savePokemon() {
-        if (!this.pokemon.species) {
-            alert('Please select a Pokemon first!');
-            return;
-        }
-
-        const saveData = {
-            ...this.pokemon,
-            nickname: document.getElementById('pc-nickname')?.value,
-            ability: document.getElementById('pc-ability')?.value,
-            item: document.getElementById('pc-item')?.value,
-            tera: document.getElementById('pc-tera')?.value,
-            moves: [1, 2, 3, 4].map(i => document.getElementById(`pc-move-${i}`)?.value)
-        };
-
-        const blob = new Blob([JSON.stringify(saveData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${this.pokemon.species}_build.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    sharePokemon() {
-        if (!this.pokemon.species) {
-            alert('Please select a Pokemon first!');
-            return;
-        }
-
-        const showdown = this.generateShowdown();
-        const shareUrl = `https://pkm-universe-live-trading.com/?pokemon=${encodeURIComponent(btoa(showdown))}`;
-
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('Share link copied to clipboard!');
-        });
-    }
-
-    addToBatch(slot) {
-        if (!this.pokemon.species) {
-            alert('Please select a Pokemon first!');
-            return;
-        }
-
-        slot.classList.add('filled');
-        slot.innerHTML = `
-            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${this.pokemon.speciesId}.png" alt="${this.pokemon.species}">
-            <span class="slot-label">${this.pokemon.species}</span>
-        `;
+    capitalize(str) {
+        return str.split('-').map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
     }
 }
 
-// Initialize
-window.pokemonCreator = new PokemonCreator();
+// Initialize when DOM is ready
+let pokemonWizard;
+document.addEventListener('DOMContentLoaded', () => {
+    pokemonWizard = new PokemonCreatorWizard();
+});
+
+// Also try to initialize if DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(() => {
+        if (!pokemonWizard) {
+            pokemonWizard = new PokemonCreatorWizard();
+        }
+    }, 100);
+}
