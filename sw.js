@@ -3,8 +3,8 @@
  * Enables offline functionality and caching for PWA
  */
 
-const CACHE_NAME = 'pkm-universe-v1';
-const RUNTIME_CACHE = 'runtime-cache-v1';
+const CACHE_NAME = 'pkm-universe-v2';
+const RUNTIME_CACHE = 'runtime-cache-v2';
 
 // Resources to cache immediately on install
 const PRECACHE_URLS = [
