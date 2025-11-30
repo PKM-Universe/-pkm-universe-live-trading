@@ -272,61 +272,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// Discord OAuth URLs
-const DISCORD_API = 'https://discord.com/api/v10';
-const DISCORD_CDN = 'https://cdn.discordapp.com';
-
-// Discord OAuth login redirect
+// Discord invite link (OAuth disabled - redirect to Discord server)
 app.get('/auth/login', (req, res) => {
-    const params = new URLSearchParams({
-        client_id: config.discord.clientId,
-        redirect_uri: config.discord.redirectUri,
-        response_type: 'code',
-        scope: 'identify guilds'
-    });
-    res.redirect(`https://discord.com/api/oauth2/authorize?${params}`);
+    res.redirect('https://discord.gg/pkm-universe');
 });
 
-// Discord OAuth callback
-app.get('/auth/callback', async (req, res) => {
-    const { code } = req.query;
-    if (!code) return res.redirect('/?error=no_code');
-
-    try {
-        // Exchange code for token
-        const tokenRes = await fetch(`${DISCORD_API}/oauth2/token`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                client_id: config.discord.clientId,
-                client_secret: config.discord.clientSecret,
-                grant_type: 'authorization_code',
-                code,
-                redirect_uri: config.discord.redirectUri
-            })
-        });
-        const tokens = await tokenRes.json();
-
-        if (tokens.error) {
-            return res.redirect('/?error=token_error');
-        }
-
-        // Get user info
-        const userRes = await fetch(`${DISCORD_API}/users/@me`, {
-            headers: { Authorization: `Bearer ${tokens.access_token}` }
-        });
-        const user = await userRes.json();
-
-        // Redirect with user info (in production, use sessions/cookies)
-        const avatar = user.avatar
-            ? `${DISCORD_CDN}/avatars/${user.id}/${user.avatar}.png`
-            : `${DISCORD_CDN}/embed/avatars/${user.discriminator % 5}.png`;
-
-        res.redirect(`/?user=${encodeURIComponent(user.username)}&avatar=${encodeURIComponent(avatar)}&id=${user.id}`);
-    } catch (error) {
-        console.error('OAuth error:', error);
-        res.redirect('/?error=oauth_failed');
-    }
+// OAuth callback (disabled - redirect to home)
+app.get('/auth/callback', (req, res) => {
+    res.redirect('/');
 });
 
 // Logout
